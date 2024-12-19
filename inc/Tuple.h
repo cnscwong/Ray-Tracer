@@ -1,3 +1,5 @@
+#pragma once
+
 // Parent class for points and vectors
 class Tuple{
     public:
@@ -16,13 +18,13 @@ Tuple multiplyTuple(Tuple a, float scale);
 Tuple divideTuple(Tuple a, float scale);
 
 // Class for a point, inherits from Tuple
-class Point : public Tuple{
+class Point: public Tuple{
     public:
         Point(float x, float y, float z);
 };
 
 // Class for a vector, inherits from Tuple
-class Vector : public Tuple{
+class Vector: public Tuple{
     public:
         Vector(float x, float y, float z);
 
