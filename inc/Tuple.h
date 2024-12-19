@@ -5,8 +5,15 @@ class Tuple{
         float point;
 
         Tuple(float x, float y, float z, float point);
-        float isPoint();
+        bool isEqual(Tuple a);
 };
+
+// Tuple Operations
+Tuple addTuples(Tuple a, Tuple b);
+Tuple subtractTuples(Tuple a, Tuple b);
+Tuple negateTuple(Tuple a);
+Tuple multiplyTuple(Tuple a, float scale);
+Tuple divideTuple(Tuple a, float scale);
 
 // Class for a point, inherits from Tuple
 class Point : public Tuple{
@@ -18,4 +25,12 @@ class Point : public Tuple{
 class Vector : public Tuple{
     public:
         Vector(float x, float y, float z);
+
+        // Vector Operations
+        float magnitude();
+        void normalize();
 };
+
+// More Vector Operations
+float dotProduct(Vector a, Vector b);
+Vector crossProduct(Vector a, Vector b);

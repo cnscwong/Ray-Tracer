@@ -1,15 +1,15 @@
 cc_library(
     name = "source",
-    srcs = ["src/Tuple.cpp"], 
-    hdrs = ["inc/Tuple.h"], 
+    srcs = ["src/Tuple.cpp", "src/common.cpp"], 
+    hdrs = ["inc/Tuple.h", "inc/common.h"], 
     includes = ["inc"]
 )
 
 
 cc_test(
-    name = "tuple_test", 
+    name = "tuple_tests", 
     size = "small",
-    srcs = ["tests/tuple_test.cc"], 
+    srcs = ["tests/tuple_tests.cc"], 
     deps = [
         ":source",
         "@googletest//:gtest",

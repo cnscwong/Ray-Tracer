@@ -4,3 +4,4 @@
 /bazel-testlogs/
 /MODULE.bazel.lock
 .vscode
+Notes.txt
