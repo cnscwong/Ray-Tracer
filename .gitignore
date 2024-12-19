@@ -1,0 +1,5 @@
+/bazel-3d-renderer/
+/bazel-bin/
+/bazel-out/
+/bazel-testlogs/
+/MODULE.bazel.lock
