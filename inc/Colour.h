@@ -1,10 +1,11 @@
 #pragma once
+#include <string>
 
 // Class to store colour properties
 class Colour{
 public:
     float r, g, b;
-
+    Colour();
     Colour(float r, float g, float b);
     bool isEqual(Colour a);
 };

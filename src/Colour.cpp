@@ -1,7 +1,15 @@
 #include "Colour.h"
 #include "common.h"
 
-// Colour constructor
+// Colour constructors
+
+// Default colour constructor to black
+Colour::Colour(){
+    this->r = 0;
+    this->g = 0;
+    this->b = 0;
+}
+
 Colour::Colour(float r, float g, float b){
     this->r = r;
     this->g = g;
