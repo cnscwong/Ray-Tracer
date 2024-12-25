@@ -14,6 +14,14 @@ TEST(CanvasTests, BasicTest){
             EXPECT_TRUE(a.pixelColour(x, y).isEqual(Colour(0, 0, 0)));
         }
     }
+
+    Canvas b;
+    EXPECT_EQ(b.getWidth(), 100);
+    EXPECT_EQ(b.getHeight(), 100);
+
+    Canvas c(-10, -10);
+    EXPECT_EQ(c.getWidth(), 100);
+    EXPECT_EQ(c.getHeight(), 100);
 }
 
 TEST(CanvasTests, WritePixel){

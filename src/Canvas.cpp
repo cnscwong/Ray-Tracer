@@ -60,7 +60,9 @@ Colour Canvas::pixelColour(int x, int y){
 
 // Updates the pixel colour at position [x][y]
 void Canvas::write_pixel(int x, int y, Colour c){
-    pixels[y][x] = c;
+    if(x >= 0 && x < width && y >= 0 && y < height){
+        pixels[y][x] = c;
+    }
 }
 
 // Sets all pixels to specified colour c
