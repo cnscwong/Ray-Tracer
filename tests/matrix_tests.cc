@@ -70,7 +70,7 @@ TEST(MatrixTests, MatrixMultiplicationSameDimensions){
     std::vector<std::vector<float>> v3 = {{20, 22, 50, 48}, {44, 54, 114, 108}, {40, 58, 110, 102}, {16, 26, 46, 42}};
     Matrix c(4, 4, v3);
 
-    EXPECT_TRUE(c.isEqual(multiplyMatrix(a, b)));
+    EXPECT_TRUE(c.isEqual(a*b));
 }
 
 TEST(MatrixTests, MatrixMultiplicationDiffDimensions){
@@ -81,9 +81,9 @@ TEST(MatrixTests, MatrixMultiplicationDiffDimensions){
 
     std::vector<std::vector<float>> v3 = {{18}, {24}, {33}, {1}};
     Matrix c(4, 1, v3);
-    EXPECT_TRUE(c.isEqual(multiplyMatrix(a, b)));
+    EXPECT_TRUE(c.isEqual(a*b));
     Tuple d(1, 2, 3, 1);
-    EXPECT_TRUE(c.isEqual(multiplyMatrixTuple(a, d)));
+    EXPECT_TRUE(Tuple(18, 24, 33, 1).isEqual(a*d));
 }
 
 TEST(MatrixTests, MatrixMultiplicationIdentity){
@@ -93,8 +93,8 @@ TEST(MatrixTests, MatrixMultiplicationIdentity){
 
     std::vector<std::vector<float>> v3 = {{1}, {2}, {3}, {4}};
     Matrix c(4, 1, v3);
-    EXPECT_TRUE(b.isEqual(multiplyMatrix(b, a)));
-    EXPECT_TRUE(c.isEqual(multiplyMatrix(a, c)));
+    EXPECT_TRUE(b.isEqual(b*a));
+    EXPECT_TRUE(c.isEqual(a*c));
 }
 
 TEST(MatrixTests, MatrixTranspose){
@@ -183,5 +183,89 @@ TEST(MatrixTests, MoreMatrixInverse){
     std::vector<std::vector<float>> v6 = {{8, 2, 2, 2}, {3, -1, 7, 0}, {7, 0, 5, 4}, {6, -2, 0, 5}};
     Matrix e(4, 4, v5);
     Matrix f(4, 4, v6);
-    EXPECT_TRUE(multiplyMatrix(multiplyMatrix(e, f), f.inverse()).isEqual(e));
+    EXPECT_TRUE(((e*f)*f.inverse()).isEqual(e));
+}
+
+TEST(MatrixTransformations, TranslationTest){
+    Matrix transform = translationMatrix(5, -3, 2);
+    Point p(-3, 4, 5);
+    EXPECT_TRUE((transform*p).isEqual(Point(2, 1, 7)));
+    EXPECT_TRUE((transform.inverse()*p).isEqual(Point(-8, 7, 3)));
+    
+    // Testing that multiplication of translation matrix with vector does nothing
+    Vector v(-3, 4, 5);
+    EXPECT_TRUE(v.isEqual(transform*v));
+}
+
+TEST(MatrixTransformations, ScalingTest){
+    Matrix transform = scalingMatrix(2, 3, 4);
+    Point p(-4, 6, 8);
+    EXPECT_TRUE((transform*p).isEqual(Point(-8, 18, 32)));
+
+    Vector v(-4, 6, 8);
+    EXPECT_TRUE((transform*v).isEqual(Vector(-8, 18, 32)));
+    EXPECT_TRUE((transform.inverse()*v).isEqual(Vector(-2, 2, 2)));
+
+    // Reflection Test
+    transform = scalingMatrix(-1, 1, 1);
+    p = Point(2, 3, 4);
+    EXPECT_TRUE((transform*p).isEqual(Point(-2, 3, 4)));
+}
+
+TEST(MatrixTransformations, RotationTest){
+    Point p(0, 1, 0);
+    Vector v(0, 1, 0);
+    Matrix half_quarter = xRotationMatrix(PI/4);
+    Matrix full_quarter = xRotationMatrix(PI/2);
+    EXPECT_TRUE((half_quarter*p).isEqual(Point(0, sqrt(2)/2, sqrt(2)/2)));
+    EXPECT_TRUE((full_quarter*p).isEqual(Point(0, 0, 1)));
+    EXPECT_TRUE((half_quarter.inverse()*p).isEqual(Point(0, sqrt(2)/2, -sqrt(2)/2)));
+    EXPECT_TRUE((half_quarter*v).isEqual(Vector(0, sqrt(2)/2, sqrt(2)/2)));
+    EXPECT_TRUE((full_quarter*v).isEqual(Vector(0, 0, 1)));
+    EXPECT_TRUE((half_quarter.inverse()*v).isEqual(Vector(0, sqrt(2)/2, -sqrt(2)/2)));
+
+    p = Point(0, 0, 1);
+    half_quarter = yRotationMatrix(PI/4);
+    full_quarter = yRotationMatrix(PI/2);
+    EXPECT_TRUE((half_quarter*p).isEqual(Point(sqrt(2)/2, 0, sqrt(2)/2)));
+    EXPECT_TRUE((full_quarter*p).isEqual(Point(1, 0, 0)));
+
+    p = Point(0, 1, 0);
+    half_quarter = zRotationMatrix(PI/4);
+    full_quarter = zRotationMatrix(PI/2);
+    EXPECT_TRUE((half_quarter*p).isEqual(Point(-sqrt(2)/2, sqrt(2)/2, 0)));
+    EXPECT_TRUE((full_quarter*p).isEqual(Point(-1, 0, 0)));
+}
+
+TEST(MatrixTransformations, ShearingTest){
+    Point p(2, 3, 4);
+    Matrix transform = shearingMatrix(1, 0, 0, 0, 0, 0);
+    EXPECT_TRUE((transform*p).isEqual(Point(5, 3, 4)));
+    transform = shearingMatrix(0, 1, 0, 0, 0, 0);
+    EXPECT_TRUE((transform*p).isEqual(Point(6, 3, 4)));
+    transform = shearingMatrix(0, 0, 1, 0, 0, 0);
+    EXPECT_TRUE((transform*p).isEqual(Point(2, 5, 4)));
+    transform = shearingMatrix(0, 0, 0, 1, 0, 0);
+    EXPECT_TRUE((transform*p).isEqual(Point(2, 7, 4)));
+    transform = shearingMatrix(0, 0, 0, 0, 1, 0);
+    EXPECT_TRUE((transform*p).isEqual(Point(2, 3, 6)));
+    transform = shearingMatrix(0, 0, 0, 0, 0, 1);
+    EXPECT_TRUE((transform*p).isEqual(Point(2, 3, 7)));
+}
+
+TEST(MatrixTransformations, ChainingTest){
+    Point p(1, 0, 1);
+    Matrix A = xRotationMatrix(PI/2);
+    Matrix B = scalingMatrix(5, 5, 5);
+    Matrix C = translationMatrix(10, 5, 7);
+    Tuple p2 = A*p;
+    Tuple p3 = B*p2;
+    Tuple p4 = C*p3;
+
+    EXPECT_TRUE(p2.isEqual(Point(1, -1, 0)));
+    EXPECT_TRUE(p3.isEqual(Point(5, -5, 0)));
+    EXPECT_TRUE(p4.isEqual(Point(15, 0, 7)));
+
+    Matrix transform = chainTransformationMatrices({A, B, C});
+    EXPECT_TRUE((transform*p).isEqual(p4));
 }

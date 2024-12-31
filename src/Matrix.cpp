@@ -119,22 +119,22 @@ bool Matrix::isEqual(Matrix a){
 }
 
 // Matrix multiplication
-Matrix multiplyMatrix(Matrix m1, Matrix m2){
+Matrix Matrix::operator*(Matrix m2){
     // Invalid matrix multiplication
-    if(m1.getCols() != m2.getRows()){
+    if(cols != m2.getRows()){
         throw std::invalid_argument("Invalid matrix dimensions");
     }
 
     // Initializes matrix result
-    Matrix m(m1.getRows(), m2.getCols());
+    Matrix m(rows, m2.getCols());
     float s = 0;
     // Iterates through all elements and sets values in matrix result
     for(int r = 0; r < m.getRows(); r++){
         for(int c = 0; c < m.getCols(); c++){
             s = 0;
             // Calculating value at coord rc
-            for(int i = 0; i < m1.getCols(); i++){
-                s += m1.getElement(r, i)*m2.getElement(i, c);
+            for(int i = 0; i < cols; i++){
+                s += getElement(r, i)*m2.getElement(i, c);
             }
             // Sets value s at coordinate rc
             m.setElement(r, c, s);
@@ -145,27 +145,27 @@ Matrix multiplyMatrix(Matrix m1, Matrix m2){
 }
 
 // Matrix multiplication with vector
-Matrix multiplyMatrixTuple(Matrix m1, Tuple m2){
+Tuple Matrix::operator*(Tuple m2){
     // Invalid matrix multiplication
-    if(m1.getCols() != 4){
+    if(cols != 4){
         throw std::invalid_argument("multiplyMatrixTuple: Invalid matrix dimensions");
     }
 
     // Initializes matrix result
-    Matrix m(m1.getRows(), 1);
+    Matrix m(rows, 1);
     float s = 0;
     // Iterates through all elements and sets values in matrix result
     for(int r = 0; r < m.getRows(); r++){
         s = 0;
-        s += m1.getElement(r, 0)*m2.x;
-        s += m1.getElement(r, 1)*m2.y;
-        s += m1.getElement(r, 2)*m2.z;
-        s += m1.getElement(r, 3)*m2.point;
+        s += getElement(r, 0)*m2.x;
+        s += getElement(r, 1)*m2.y;
+        s += getElement(r, 2)*m2.z;
+        s += getElement(r, 3)*m2.point;
         // Sets value s at coordinate r, 0
         m.setElement(r, 0, s);
     }
 
-    return m;
+    return Tuple(m.getElement(0, 0), m.getElement(1, 0), m.getElement(2, 0), m.getElement(3, 0));
 }
 
 // Computes the transpose of the matrix
@@ -276,4 +276,134 @@ Matrix Matrix::inverse(){
     }
 
     return m;
+}
+
+// Computes translation matrix given x, y, and z
+// When this matrix is multiplied with a Point
+// The point will be translated in the x direction
+// x units away, the y direction y units away, and 
+// the z direction z units away
+// Additionally, multiplying a Vector by this matrix will
+// do nothing because of the point variable being 0.0
+Matrix translationMatrix(int x, int y, int z){
+    // Generates 4x4 identity matrix
+    Matrix m(4);
+
+    // Translation matrix is equivalent to:
+    // 1 0 0 x
+    // 0 1 0 y
+    // 0 0 1 z
+    // 0 0 0 1
+
+    m.setElement(0, 3, x);
+    m.setElement(1, 3, y);
+    m.setElement(2, 3, z);
+    return m;
+}
+
+// Does same thing as translation matrix but the multiplied tuple
+// is scaled instead. Works for both points and vectors
+// Can also perform reflection using negative input parameters
+Matrix scalingMatrix(int x, int y, int z){
+    // Generates 4x4 identity matrix
+    Matrix m(4);
+
+    // Scaling matrix is equivalent to:
+    // x 0 0 0
+    // 0 y 0 0
+    // 0 0 z 0
+    // 0 0 0 1
+
+    m.setElement(0, 0, x);
+    m.setElement(1, 1, y);
+    m.setElement(2, 2, z);
+    return m;
+}
+
+// Rotation functions
+// Does same thing as translation matrix but the multiplied tuple
+// is rotated along specified axis in funct name instead. Works 
+// for points and vectors
+Matrix xRotationMatrix(float r){
+    // Generates 4x4 identity matrix
+    Matrix m(4);
+
+    // Scaling matrix is equivalent to:
+    // 1  0      0      0
+    // 0 cos(r) -sin(r) 0
+    // 0 sin(r) cos(r)  0
+    // 0  0      0      1
+
+    m.setElement(1, 1, cos(r));
+    m.setElement(1, 2, -sin(r));
+    m.setElement(2, 1, sin(r));
+    m.setElement(2, 2, cos(r));
+    return m;
+}
+
+Matrix yRotationMatrix(float r){
+    // Generates 4x4 identity matrix
+    Matrix m(4);
+
+    // Scaling matrix is equivalent to:
+    // cos(r)  0 sin(r) 0
+    // 0       1  0     0
+    // -sin(r) 0 cos(r) 0
+    // 0       0  0     1
+
+    m.setElement(0, 0, cos(r));
+    m.setElement(0, 2, sin(r));
+    m.setElement(2, 0, -sin(r));
+    m.setElement(2, 2, cos(r));
+    return m;
+}
+
+Matrix zRotationMatrix(float r){
+    // Generates 4x4 identity matrix
+    Matrix m(4);
+
+    // Scaling matrix is equivalent to:
+    // cos(r) -sin(r) 0 0
+    // sin(r)  cos(r) 0 0
+    //  0        0    1 0
+    //  0        0    0 1
+
+    m.setElement(0, 0, cos(r));
+    m.setElement(0, 1, -sin(r));
+    m.setElement(1, 0, sin(r));
+    m.setElement(1, 1, cos(r));
+    return m;
+}
+
+// For x_y, x changes in proportion to y, the farther the y coordinate of the point is from 0,
+// the more the x value changes. This can be applied to x and z too(x_z) and other axis combinations
+// as seen in the parameters. This has the effect of making a straight line slanted, etc. Meant to be 
+// used for points, although vectors would work
+Matrix shearingMatrix(float x_y, float x_z, float y_x, float y_z, float z_x, float z_y){
+    // Generates 4x4 identity matrix
+    Matrix m(4);
+
+    // Scaling matrix is equivalent to:
+    // 1   x_y x_z 0
+    // y_x 1   y_z 0
+    // z_x z_y 1   0
+    // 0   0   0   1
+
+    m.setElement(0, 1, x_y);
+    m.setElement(0, 2, x_z);
+    m.setElement(1, 0, y_x);
+    m.setElement(1, 2, y_z);
+    m.setElement(2, 0, z_x);
+    m.setElement(2, 1, z_y);
+    return m;
+}
+
+Matrix chainTransformationMatrices(std::initializer_list<Matrix> matrices){
+    Matrix result = Matrix(4);
+    for (auto m : matrices) {
+        result = m*result;
+    }
+
+    // Returns multiplication of current matrix with rest of the matrices
+    return result;
 }

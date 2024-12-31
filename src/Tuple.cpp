@@ -1,6 +1,4 @@
 #include "Tuple.h"
-#include "common.h"
-#include <cmath>
 
 // Tuple constructor
 Tuple::Tuple(float x, float y, float z, float point){

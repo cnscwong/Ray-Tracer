@@ -1,4 +1,3 @@
-#include <cmath>
 #include "common.h"
 
 // Checks if the difference between 2 floats is under a threshold value

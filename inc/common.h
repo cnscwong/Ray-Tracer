@@ -1,4 +1,5 @@
 #pragma once
+#include <cmath>
 
 // Threshold to check float equality |a - b| < EPSILON
 const float EPSILON = 0.0001f;
