@@ -57,11 +57,6 @@ public:
     Tuple operator*(Tuple m2);
 };
 
-// Multiplies matrices together
-Matrix multiplyMatrix(Matrix m1, Matrix m2);
-// Multiplies a matrix by a tuple(4x1 matrix)
-Tuple multiplyMatrixTuple(Matrix m1, Tuple m2);
-
 // Matrix transformations
 // Generates a translation matrix given x, y, z coordinates
 Matrix translationMatrix(int x, int y, int z);

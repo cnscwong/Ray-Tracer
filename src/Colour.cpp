@@ -25,24 +25,23 @@ bool Colour::isEqual(Colour a){
 }
 
 // Colour operations, works the same as tuple operations
-
-// Returns the colour a + b
-Colour addColours(Colour a, Colour b){
-    return Colour(a.r+b.r, a.g+b.g, a.b+b.b);
+// Returns the colour this + a
+Colour Colour::operator+(Colour a){
+    return Colour(r + a.r, g + a.g, b + a.b);
 }
 
-// Returns the colour a - b
-Colour subtractColours(Colour a, Colour b){
-    return Colour(a.r-b.r, a.g-b.g, a.b-b.b);
+// Returns the colour this - a
+Colour Colour::operator-(Colour a){
+    return Colour(r - a.r, g - a.g, b - a.b);
 }
 
-// Returns the colour a*scale
-Colour scaleColour(Colour a, float scale){
-    return Colour(a.r*scale, a.g*scale, a.b*scale);
+// Returns the colour this*scale
+Colour Colour::operator*(float scale){
+    return Colour(r*scale, g*scale, b*scale);
 }
 
-// Hadamard product. Conceptually the combination of viewing one colour under
+// Hadamard product(this * a). Conceptually the combination of viewing one colour under
 // a coloured light
-Colour multiplyColour(Colour a, Colour b){
-    return Colour(a.r*b.r, a.g*b.g, a.b*b.b);
+Colour Colour::operator*(Colour a){
+    return Colour(r*a.r, g*a.g, b*a.b);
 }

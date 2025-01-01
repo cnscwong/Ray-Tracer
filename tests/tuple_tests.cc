@@ -55,42 +55,42 @@ TEST(TupleOperations, TupleAddition){
   Point a(4.3, -4.2, 3.1);
   Vector b(4.3, -4.2, 3.1);
 
-  EXPECT_TRUE(addTuples(a, b).isEqual(Point(8.6, -8.4, 6.2)));
+  EXPECT_TRUE((a + b).isEqual(Point(8.6, -8.4, 6.2)));
 
   Vector c(6.2, 2.1, -5.8);
 
-  EXPECT_TRUE(addTuples(b, c).isEqual(Vector(10.5, -2.1, -2.7)));
+  EXPECT_TRUE((b + c).isEqual(Vector(10.5, -2.1, -2.7)));
 
   Tuple d(3, -2, 5, 1);
   Tuple e(-2, 3, 1, 0);
-  EXPECT_TRUE(addTuples(d, e).isEqual(Tuple(1, 1, 6, 1)));
+  EXPECT_TRUE((d + e).isEqual(Tuple(1, 1, 6, 1)));
 }
 
 TEST(TupleOperations, TupleSubtraction){
   Point a(3, 2, 1);
   Point b(5, 6, 7);
 
-  EXPECT_TRUE(subtractTuples(a, b).isEqual(Vector(-2, -4, -6)));
+  EXPECT_TRUE((a - b).isEqual(Vector(-2, -4, -6)));
 
   Vector c(5, 6, 7);
-  EXPECT_TRUE(subtractTuples(a, c).isEqual(Point(-2, -4, -6)));
+  EXPECT_TRUE((a - c).isEqual(Point(-2, -4, -6)));
 
   Vector d(8, 9, 2);
-  EXPECT_TRUE(subtractTuples(c, d).isEqual(Vector(-3, -3, 5)));
+  EXPECT_TRUE((c - d).isEqual(Vector(-3, -3, 5)));
 }
 
 TEST(TupleOperations, TupleNegation){
   Tuple a(1, -2, 3, -4);
 
-  EXPECT_TRUE(negateTuple(a).isEqual(Tuple(-1, 2, -3, 4)));
+  EXPECT_TRUE(a.negateTuple().isEqual(Tuple(-1, 2, -3, 4)));
 }
 
 TEST(TupleOperations, TupleMultiplyDivide){
   Tuple a(1, -2, 3, -4);
 
-  EXPECT_TRUE(multiplyTuple(a, 3.5).isEqual(Tuple(3.5, -7, 10.5, -14)));
-  EXPECT_TRUE(multiplyTuple(a, 0.5).isEqual(Tuple(0.5, -1, 1.5, -2)));
-  EXPECT_TRUE(divideTuple(a, 2).isEqual(Tuple(0.5, -1, 1.5, -2)));
+  EXPECT_TRUE((a*3.5).isEqual(Tuple(3.5, -7, 10.5, -14)));
+  EXPECT_TRUE((a*0.5).isEqual(Tuple(0.5, -1, 1.5, -2)));
+  EXPECT_TRUE((a/2).isEqual(Tuple(0.5, -1, 1.5, -2)));
 }
 
 TEST(VectorOperations, VectorMagnitude){

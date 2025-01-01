@@ -14,14 +14,13 @@ class Tuple{
 
         Tuple(float x, float y, float z, float point);
         bool isEqual(Tuple a);
+        // Tuple Operations
+        Tuple operator+(Tuple b);
+        Tuple operator-(Tuple b);
+        Tuple operator*(float scale);
+        Tuple operator/(float scale);
+        Tuple negateTuple();
 };
-
-// Tuple Operations
-Tuple addTuples(Tuple a, Tuple b);
-Tuple subtractTuples(Tuple a, Tuple b);
-Tuple negateTuple(Tuple a);
-Tuple multiplyTuple(Tuple a, float scale);
-Tuple divideTuple(Tuple a, float scale);
 
 // Class for a point, inherits from Tuple
 class Point: public Tuple{
