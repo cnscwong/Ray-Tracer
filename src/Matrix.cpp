@@ -285,7 +285,7 @@ Matrix Matrix::inverse(){
 // the z direction z units away
 // Additionally, multiplying a Vector by this matrix will
 // do nothing because of the point variable being 0.0
-Matrix translationMatrix(int x, int y, int z){
+Matrix translationMatrix(float x, float y, float z){
     // Generates 4x4 identity matrix
     Matrix m(4);
 
@@ -304,7 +304,7 @@ Matrix translationMatrix(int x, int y, int z){
 // Does same thing as translation matrix but the multiplied tuple
 // is scaled instead. Works for both points and vectors
 // Can also perform reflection using negative input parameters
-Matrix scalingMatrix(int x, int y, int z){
+Matrix scalingMatrix(float x, float y, float z){
     // Generates 4x4 identity matrix
     Matrix m(4);
 

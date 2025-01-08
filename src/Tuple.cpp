@@ -1,6 +1,13 @@
 #include "Tuple.h"
 
-// Tuple constructor
+// Tuple constructors
+Tuple::Tuple(){
+    this->x = 0;
+    this->y = 0;
+    this->z = 0;
+    this->point = 1;
+}
+
 Tuple::Tuple(float x, float y, float z, float point){
     this->x = x;
     this->y = y;
@@ -46,11 +53,19 @@ Tuple Tuple::negateTuple(){
     return Tuple(-x, -y, -z, -point);
 }
 
-// Point constructor
+// Point constructors
+Point::Point(): Tuple(0, 0, 0, 1.0) {}
+
 Point::Point(float x, float y, float z): Tuple(x, y, z, 1.0) {}
 
-// Vector constructor
+Point::Point(Tuple t): Tuple(t.x, t.y, t.z, 1.0) {}
+
+// Vector constructors
+Vector::Vector(): Tuple(1, 1, 1, 0.0) {}
+
 Vector::Vector(float x, float y, float z): Tuple(x, y, z, 0.0) {}
+
+Vector::Vector(Tuple t): Tuple(t.x, t.y, t.z, 0.0) {}
 
 // NOTE!! Point is included in these vector operations to hopefully help if there
 // are any bugs later as point should always be 0 so it will have no effect on these
@@ -61,13 +76,10 @@ float Vector::magnitude(){
 }
 
 // Normalizes vector so it's magnitude = 1
-void Vector::normalize(){
+Vector Vector::normalize(){
     float mag = magnitude();
 
-    x = x/mag;
-    y = y/mag;
-    z = z/mag;
-    point = point/mag;
+    return Vector(x/mag, y/mag, z/mag);
 }
 
 // Calculates dot product of vectors a and b

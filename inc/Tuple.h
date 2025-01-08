@@ -12,6 +12,8 @@ class Tuple{
         // tuple should be(point or vector). Just think of this as a 4d tuple (x, y, z, point)
         float point;
 
+        // Tuple constructors
+        Tuple();
         Tuple(float x, float y, float z, float point);
         bool isEqual(Tuple a);
         // Tuple Operations
@@ -25,17 +27,23 @@ class Tuple{
 // Class for a point, inherits from Tuple
 class Point: public Tuple{
     public:
+        // Point constructors
+        Point();
         Point(float x, float y, float z);
+        Point(Tuple t);
 };
 
 // Class for a vector, inherits from Tuple
 class Vector: public Tuple{
     public:
+        // Vector constructors
+        Vector();
         Vector(float x, float y, float z);
+        Vector(Tuple t);
 
         // Vector Operations
         float magnitude();
-        void normalize();
+        Vector normalize();
 };
 
 // More Vector Operations

@@ -104,13 +104,11 @@ TEST(VectorOperations, VectorMagnitude){
 
 TEST(VectorOperations, VectorNormalize){
   Vector a(4, 0, 0);
-  a.normalize();
-  EXPECT_TRUE(a.isEqual(Vector(1, 0, 0)));
+  EXPECT_TRUE(a.normalize().isEqual(Vector(1, 0, 0)));
 
   Vector b(1, 2, 3);
-  b.normalize();
-  EXPECT_TRUE(b.isEqual(Vector(0.26726, 0.53452, 0.80178)));
-  EXPECT_NEAR(b.magnitude(), 1, EPSILON);
+  EXPECT_TRUE(b.normalize().isEqual(Vector(0.26726, 0.53452, 0.80178)));
+  EXPECT_NEAR(b.normalize().magnitude(), 1, EPSILON);
 }
 
 TEST(VectorOperations, VectorDotProduct){

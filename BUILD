@@ -1,7 +1,7 @@
 cc_library(
     name = "source",
-    srcs = ["src/Tuple.cpp", "src/common.cpp", "src/Colour.cpp", "src/Canvas.cpp", "src/Matrix.cpp"], 
-    hdrs = ["inc/Tuple.h", "inc/common.h", "inc/Colour.h", "inc/Canvas.h", "inc/Matrix.h"], 
+    srcs = ["src/Tuple.cpp", "src/common.cpp", "src/Colour.cpp", "src/Canvas.cpp", "src/Matrix.cpp", "src/Ray.cpp", "src/Sphere.cpp", "src/Intersection.cpp", "src/LightAndShading.cpp"], 
+    hdrs = ["inc/Tuple.h", "inc/common.h", "inc/Colour.h", "inc/Canvas.h", "inc/Matrix.h", "inc/Ray.h", "inc/Sphere.h", "inc/Intersection.h", "inc/LightAndShading.h"], 
     includes = ["inc"]
 )
 
@@ -50,3 +50,35 @@ cc_test(
     ]
 )
 
+cc_test(
+    name = "ray_tests", 
+    size = "small",
+    srcs = ["tests/ray_tests.cc"], 
+    deps = [
+        ":source",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main"
+    ]
+)
+
+cc_test(
+    name = "intersection_tests", 
+    size = "small",
+    srcs = ["tests/intersection_tests.cc"], 
+    deps = [
+        ":source",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main"
+    ]
+)
+
+cc_test(
+    name = "light_shading_tests", 
+    size = "small",
+    srcs = ["tests/light_shading_tests.cc"], 
+    deps = [
+        ":source",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main"
+    ]
+)

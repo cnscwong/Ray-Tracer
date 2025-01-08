@@ -151,3 +151,11 @@ std::string Canvas::toPPM(){
 
     return file;
 }
+
+void Canvas::writeToFile(std::string file_name){
+    std::ofstream f(file_name);
+    std::string ppm_string = this->toPPM();
+    // Write to the file
+    f << ppm_string;
+    f.close();
+}

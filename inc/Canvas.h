@@ -2,6 +2,8 @@
 #include "Colour.h"
 #include "common.h"
 #include <string>
+#include <iostream>
+#include <fstream>
 
 const int DEFAULT_WIDTH = 100;
 const int DEFAULT_HEIGHT = 100;
@@ -28,4 +30,5 @@ public:
 
     // Produces the canvas as a ppm file string
     std::string toPPM();
+    void writeToFile(std::string file_name);
 };

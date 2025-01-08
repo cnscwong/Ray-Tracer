@@ -6,62 +6,62 @@
 #include <string>
 #include <cmath>
 
-const int DEFAULT_ROWS = 2;
-const int DEFAULT_COLS = 2;
+const int DEFAULT_ROWS = 4;
+const int DEFAULT_COLS = 4;
 const float PI = 3.14159265358979323846f;
 
 class Matrix{
-private:
-    int rows;
-    int cols;
-    std::vector<std::vector<float>> matrix;
-public:
-    // Constructors
-    Matrix();
-    Matrix(int i);
-    Matrix(int r, int c);
-    Matrix(int r, int c, std::vector<std::vector<float>> vec);
+    private:
+        int rows;
+        int cols;
+        std::vector<std::vector<float>> matrix;
+    public:
+        // Constructors
+        Matrix();
+        Matrix(int i);
+        Matrix(int r, int c);
+        Matrix(int r, int c, std::vector<std::vector<float>> vec);
 
-    // Checks if given coordinates are valid
-    bool checkCoordValid(int x, int y);
+        // Checks if given coordinates are valid
+        bool checkCoordValid(int x, int y);
 
-    // Getters and setters for variables
-    int getRows();
-    int getCols();
-    float getElement(int x, int y);
-    void setElement(int x, int y, float val);
-    std::vector<std::vector<float>> getMatrix();
+        // Getters and setters for variables
+        int getRows();
+        int getCols();
+        float getElement(int x, int y);
+        void setElement(int x, int y, float val);
+        std::vector<std::vector<float>> getMatrix();
 
-    // Equality check function
-    bool isEqual(Matrix a);
+        // Equality check function
+        bool isEqual(Matrix a);
 
-    // Matrix operations
-    // Transpose of matrix
-    Matrix transpose();
-    // Determinant for 2x2 matrix
-    float twoDet();
-    // Returns a submatrix with row x and col y removed
-    Matrix submatrix(int x, int y);
-    // Calculates the minor of the matrix given xy(More info in Matrix.cpp)
-    float minor(int x, int y);
-    // Calculates the cofactor of the matrix given xy(More info in Matrix.cpp)
-    float cofactor(int x, int y);
-    // Calculates the determinant
-    float determinant();
-    // Checks if matrix is invertable
-    bool isInvertable();
-    // Computes inverse of matrix
-    Matrix inverse();
+        // Matrix operations
+        // Transpose of matrix
+        Matrix transpose();
+        // Determinant for 2x2 matrix
+        float twoDet();
+        // Returns a submatrix with row x and col y removed
+        Matrix submatrix(int x, int y);
+        // Calculates the minor of the matrix given xy(More info in Matrix.cpp)
+        float minor(int x, int y);
+        // Calculates the cofactor of the matrix given xy(More info in Matrix.cpp)
+        float cofactor(int x, int y);
+        // Calculates the determinant
+        float determinant();
+        // Checks if matrix is invertable
+        bool isInvertable();
+        // Computes inverse of matrix
+        Matrix inverse();
 
-    Matrix operator*(Matrix m2);
-    Tuple operator*(Tuple m2);
+        Matrix operator*(Matrix m2);
+        Tuple operator*(Tuple m2);
 };
 
 // Matrix transformations
 // Generates a translation matrix given x, y, z coordinates
-Matrix translationMatrix(int x, int y, int z);
+Matrix translationMatrix(float x, float y, float z);
 // Generates a scaling matrix given x, y, z coordinates
-Matrix scalingMatrix(int x, int y, int z);
+Matrix scalingMatrix(float x, float y, float z);
 // Basic Rotations, rotates r radians around the specified axis in the function
 Matrix xRotationMatrix(float r);
 Matrix yRotationMatrix(float r);

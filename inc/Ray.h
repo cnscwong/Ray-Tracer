@@ -1,21 +1,32 @@
 #pragma once
 #include "Tuple.h"
+#include "Sphere.h"
+#include "Intersection.h"
+#include "Matrix.h"
+#include <vector>
 
 // Class for rays and ray operations
 class Ray{
-private:
-    // Stores the coordinates the ray originates from
-    Point origin = Point(0, 0, 0);
-    // Stores the direction and speed the ray travels in one time unit
-    Vector direction = Vector(1, 1, 1);
-public:
-    // Ray constructor
-    Ray(Point o, Vector d);
+    private:
+        // Stores the coordinates the ray originates from
+        Point origin;
+        // Stores the direction and speed the ray travels in one time unit
+        Vector direction;
+    public:
+        // Ray constructors
+        Ray();
+        Ray(Point o, Vector d);
 
-    // Getters
-    Point getOrigin();
-    Vector getDirection();
+        // Getters
+        Point getOrigin();
+        Vector getDirection();
 
-    // Computes the position of the ray at time t
-    Tuple computePosition(float t);
+        // Computes the position of the ray at time t
+        Tuple computePosition(float t);
+
+        // Returns a vector of times where the ray intersects the surface of the sphere s
+        std::vector<Intersection> RaySphereIntersection(Sphere s);
+
+        // Returns a ray that is transformed by the matrix m
+        Ray transform(Matrix m);
 };
