@@ -3,9 +3,6 @@
 #include "Colour.h"
 #include <stdexcept>
 #include "common.h"
-// #include "Sphere.h"
-// #include "Intersection.h"
-// #include "Ray.h"
 
 // File to store functions to simulate light reflection and shading
 

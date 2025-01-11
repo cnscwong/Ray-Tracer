@@ -58,28 +58,6 @@ std::vector<Intersection> Ray::RaySphereIntersection(Sphere s){
     return std::vector<Intersection>{Intersection(t1, s), Intersection(t2, s)};
 }
 
-// Returns a vector of intersections where the ray intersects the surface of the objects in the world
-std::vector<Intersection> Ray::WorldIntersection(World w){
-    // Gets the objects in the world and initializes the 
-    // intersection vectors needed to compute the intersections
-    std::vector<Sphere> objects = w.getObjects();
-    std::vector<Intersection> intersects;
-    std::vector<Intersection> temp;
-
-    // Adds the intersections of all the objects with the ray into
-    // the intersects vector
-    for(int i = 0; i < objects.size(); i++){
-        temp = this->RaySphereIntersection(objects.at(i));
-        for(int j = 0; j < temp.size(); j++){
-            intersects.push_back(temp.at(j));
-        }
-    }
-
-    std::sort(intersects.begin(), intersects.end(), compareIntersections);
-
-    return intersects;
-}
-
 // Transforms the ray by the matrix m
 Ray Ray::transform(Matrix m){
     return Ray(Point(m*origin), Vector(m*direction));

@@ -6,6 +6,8 @@
 #include "Tuple.h"
 #include "Intersection.h"
 #include <vector>
+#include "Ray.h"
+#include "LightData.h"
 
 // Class to store all objects in the environment
 class World{
@@ -23,6 +25,14 @@ public:
 
     void appendObject(Sphere s);
     void setLight(LightSource l);
+    void setObjects(std::vector<Sphere> obj);
+
+    // Returns a vector of intersection objects where the ray r intersects the surface of an object in the world
+    std::vector<Intersection> RayIntersection(Ray r);
+    // Returns the computed colour of a hit using the world light source and the LightData data structure
+    Colour shadeHit(LightData data);
+    // Computes the colour at the first point hit by the ray r
+    Colour colourAtHit(Ray r);
 };
 
 // Returns a default world with a light source and two spheres

@@ -4,6 +4,8 @@
 #include "Intersection.h"
 #include "Ray.h"
 #include "Tuple.h"
+#include "LightAndShading.h"
+#include "Colour.h"
 
 // Class to store computeLighting parameter data
 class LightData{
