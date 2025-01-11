@@ -3,7 +3,9 @@
 #include "Sphere.h"
 #include "Intersection.h"
 #include "Matrix.h"
+#include "World.h"
 #include <vector>
+#include <algorithm>
 
 // Class for rays and ray operations
 class Ray{
@@ -24,8 +26,10 @@ class Ray{
         // Computes the position of the ray at time t
         Tuple computePosition(float t);
 
-        // Returns a vector of times where the ray intersects the surface of the sphere s
+        // Returns a vector of intersection objects where the ray intersects the surface of the sphere s
         std::vector<Intersection> RaySphereIntersection(Sphere s);
+        // Returns a vector of intersection objects where the ray intersects the surface of an object in the world
+        std::vector<Intersection> WorldIntersection(World w);
 
         // Returns a ray that is transformed by the matrix m
         Ray transform(Matrix m);

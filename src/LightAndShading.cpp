@@ -7,7 +7,12 @@ Vector reflectVector(Vector input, Vector normal){
     return Vector(input - normal*2*dotProduct(input, normal));
 }
 
-// Light source constructor
+// Light source constructors
+LightSource::LightSource(){
+    position = Point(0, 0, 0);
+    intensity = Colour(0, 0, 0);
+}
+
 LightSource::LightSource(Point p, Colour i){
     position = p;
     intensity = i;
@@ -20,6 +25,11 @@ Point LightSource::getPosition(){
 
 Colour LightSource::getIntensity(){
     return intensity;
+}
+
+// Equality function
+bool LightSource::isEqual(LightSource l){
+    return position.isEqual(l.getPosition()) && intensity.isEqual(l.getIntensity());
 }
 
 // Material constructors
@@ -114,6 +124,7 @@ bool Material::isEqual(Material m){
     return true;
 }
 
+// Calculates the updated colour value of a point based on the ray, light, and object/material attributes
 Colour computeLighting(Material m, Point p, LightSource l, Vector eye, Vector normal){
     // Combines the material colour and light colour together
     Colour combinedColour = m.getColour()*l.getIntensity();

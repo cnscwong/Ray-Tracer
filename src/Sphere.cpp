@@ -37,7 +37,7 @@ void Sphere::setMaterial(Material m){
 
 // Checks equality of spheres
 bool Sphere::isEqual(Sphere s){
-    return id == s.id && origin.isEqual(s.getOrigin()) && floatIsEqual(radius, s.getRadius()) && transform.isEqual(s.getTransform());
+    return origin.isEqual(s.getOrigin()) && floatIsEqual(radius, s.getRadius()) && transform.isEqual(s.getTransform()) && material.isEqual(s.getMaterial());
 }
 
 // Computes the normal vector at the point p on the surface of the sphere

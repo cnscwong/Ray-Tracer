@@ -24,3 +24,6 @@ std::vector<Intersection> intersections(std::initializer_list<Intersection> l);
 // the ray hits in the list of objects. The object that is hit is the object with 
 // the lowest non-negative time
 int hit(std::vector<Intersection> vec);
+
+// Intersection comparison function
+bool compareIntersections(Intersection a, Intersection b);

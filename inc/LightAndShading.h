@@ -3,6 +3,9 @@
 #include "Colour.h"
 #include <stdexcept>
 #include "common.h"
+// #include "Sphere.h"
+// #include "Intersection.h"
+// #include "Ray.h"
 
 // File to store functions to simulate light reflection and shading
 
@@ -20,12 +23,16 @@ private:
     // Colour and intensity of the light
     Colour intensity;
 public:
-    // Lightsource constructor
+    // Lightsource constructors
+    LightSource();
     LightSource(Point p, Colour i);
 
     // Variable getters
     Point getPosition();
     Colour getIntensity();
+
+    // Equality function
+    bool isEqual(LightSource l);
 };
 
 // Class representing a material and storing attributes for the Phong

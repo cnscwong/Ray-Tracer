@@ -33,3 +33,9 @@ int hit(std::vector<Intersection> vec){
 
     return ind;
 }
+
+// Compares intersections and returns the intersection with the lower time
+// Used for std::sort function
+bool compareIntersections(Intersection a, Intersection b){
+    return a.getTime() < b.getTime();
+}

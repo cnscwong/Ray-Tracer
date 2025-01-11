@@ -25,7 +25,7 @@ Tuple Ray::computePosition(float t){
     return (origin + (direction*t));
 }
 
-// Returns a vector of times where the ray intersects the surface of the sphere s
+// Returns a vector of intersections where the ray intersects the surface of the sphere s
 // Eg. A ray that originates from (-3, 0, 0) and travels at speed (1, 0, 0) will
 // intersect a sphere with radius 1 and originates from (0, 0, 0) at {2, 4}
 // where time = 2 is when the ray first hits the sphere at (-1, 0 , 0) and
@@ -56,6 +56,28 @@ std::vector<Intersection> Ray::RaySphereIntersection(Sphere s){
     float t2 = (-b + sqrt(discriminant))/(2*a);
 
     return std::vector<Intersection>{Intersection(t1, s), Intersection(t2, s)};
+}
+
+// Returns a vector of intersections where the ray intersects the surface of the objects in the world
+std::vector<Intersection> Ray::WorldIntersection(World w){
+    // Gets the objects in the world and initializes the 
+    // intersection vectors needed to compute the intersections
+    std::vector<Sphere> objects = w.getObjects();
+    std::vector<Intersection> intersects;
+    std::vector<Intersection> temp;
+
+    // Adds the intersections of all the objects with the ray into
+    // the intersects vector
+    for(int i = 0; i < objects.size(); i++){
+        temp = this->RaySphereIntersection(objects.at(i));
+        for(int j = 0; j < temp.size(); j++){
+            intersects.push_back(temp.at(j));
+        }
+    }
+
+    std::sort(intersects.begin(), intersects.end(), compareIntersections);
+
+    return intersects;
 }
 
 // Transforms the ray by the matrix m

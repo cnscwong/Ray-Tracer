@@ -153,3 +153,24 @@ TEST(LightingTest, LightBehindSurface){
     Colour result = computeLighting(m, position, light, eye, normal);
     EXPECT_TRUE(result.isEqual(Colour(0.1, 0.1, 0.1)));
 }
+
+// TEST(LightDataTest, PrepareLightDataTest){
+//     Ray r(Point(0, 0, -5), Vector(0, 0, 1));
+//     Sphere s;
+//     Intersection i(4, s);
+//     LightData data = prepareLightData(i, r);
+//     EXPECT_EQ(data.time, 4);
+//     EXPECT_TRUE(data.object.isEqual(s));
+//     EXPECT_TRUE(data.point.isEqual(Point(0, 0, -1)));
+//     EXPECT_TRUE(data.eye.isEqual(Vector(0, 0, -1)));
+//     EXPECT_TRUE(data.normal.isEqual(Vector(0, 0, -1)));
+//     EXPECT_EQ(data.insideObject, false);
+
+//     r = Ray(Point(0, 0, 0), Vector(0, 0, 1));
+//     i = Intersection(1, s);
+//     data = prepareLightData(i, r);
+//     EXPECT_TRUE(data.point.isEqual(Point(0, 0, 1)));
+//     EXPECT_TRUE(data.eye.isEqual(Vector(0, 0, -1)));
+//     EXPECT_TRUE(data.normal.isEqual(Vector(0, 0, -1)));
+//     EXPECT_EQ(data.insideObject, true);
+// }
