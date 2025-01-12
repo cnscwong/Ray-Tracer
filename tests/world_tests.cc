@@ -79,3 +79,42 @@ TEST(WorldTest, ColourAtHitTest){
     c = w.colourAtHit(r);
     EXPECT_TRUE(c.isEqual(w.getObjects().at(1).getMaterial().getColour()));
 }
+
+TEST(WorldTest, ViewTransformationTest){
+    // The world does not require any scaling, rotating, or translation so the result is the identity matrix
+    Point eyePosition(0, 0, 0);
+    Point to(0, 0, -1);
+    Vector up(0, 1, 0);
+    EXPECT_TRUE(viewTransformationMatrix(eyePosition, to, up).isEqual(Matrix(4)));
+
+    // Since reflection is the same as scaling by negative values, turning the camera to look at the 
+    // positive z direction will result in the scalingMatrix(-1, 1, -1)
+    to = Point(0, 0, 1);
+    EXPECT_TRUE(viewTransformationMatrix(eyePosition, to, up).isEqual(scalingMatrix(-1, 1, -1)));
+
+    // The resulting matrix moves the world back 8 units
+    eyePosition = Point(0, 0, 8);
+    to = Point();
+    EXPECT_TRUE(viewTransformationMatrix(eyePosition, to, up).isEqual(translationMatrix(0, 0, -8)));
+
+    // Matrix that is a combination of shearing, scaling, and translation
+    eyePosition = Point(1, 3, 2);
+    to = Point(4, -2, 8);
+    up = Point(1, 1, 0);
+    Matrix m(4);
+    
+    m.setElement(0, 0, -0.50709);
+    m.setElement(0, 1, 0.50709);
+    m.setElement(0, 2, 0.67612);
+    m.setElement(0, 3, -2.36643);
+
+    m.setElement(1, 0, 0.76772);
+    m.setElement(1, 1, 0.60609);
+    m.setElement(1, 2, 0.12122);
+    m.setElement(1, 3, -2.82843);
+
+    m.setElement(2, 0, -0.35857);
+    m.setElement(2, 1, 0.59761);
+    m.setElement(2, 2, -0.71714);
+    EXPECT_TRUE(viewTransformationMatrix(eyePosition, to, up).isEqual(m));
+}

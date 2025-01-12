@@ -1,7 +1,7 @@
 cc_library(
     name = "source",
-    srcs = ["src/Tuple.cpp", "src/common.cpp", "src/Colour.cpp", "src/Canvas.cpp", "src/Matrix.cpp", "src/Ray.cpp", "src/Sphere.cpp", "src/Intersection.cpp", "src/LightAndShading.cpp", "src/World.cpp", "src/LightData.cpp"], 
-    hdrs = ["inc/Tuple.h", "inc/common.h", "inc/Colour.h", "inc/Canvas.h", "inc/Matrix.h", "inc/Ray.h", "inc/Sphere.h", "inc/Intersection.h", "inc/LightAndShading.h", "inc/World.h", "inc/LightData.h"], 
+    srcs = ["src/Tuple.cpp", "src/common.cpp", "src/Colour.cpp", "src/Canvas.cpp", "src/Matrix.cpp", "src/Ray.cpp", "src/Sphere.cpp", "src/Intersection.cpp", "src/LightAndShading.cpp", "src/World.cpp", "src/LightData.cpp", "src/Camera.cpp"], 
+    hdrs = ["inc/Tuple.h", "inc/common.h", "inc/Colour.h", "inc/Canvas.h", "inc/Matrix.h", "inc/Ray.h", "inc/Sphere.h", "inc/Intersection.h", "inc/LightAndShading.h", "inc/World.h", "inc/LightData.h", "inc/Camera.h"], 
     includes = ["inc"]
 )
 
@@ -87,6 +87,17 @@ cc_test(
     name = "world_tests", 
     size = "small",
     srcs = ["tests/world_tests.cc"], 
+    deps = [
+        ":source",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main"
+    ]
+)
+
+cc_test(
+    name = "camera_tests", 
+    size = "small",
+    srcs = ["tests/camera_tests.cc"], 
     deps = [
         ":source",
         "@googletest//:gtest",

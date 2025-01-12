@@ -407,3 +407,42 @@ Matrix chainTransformationMatrices(std::initializer_list<Matrix> matrices){
     // Returns multiplication of current matrix with rest of the matrices
     return result;
 }
+
+// View transformation matrix. Moves the world relative to the camera. Intuitively, you can think of it as moving
+//  the "camera" around the world to view it from different positions/directions. The eyePosition parameter is the 
+// point where the camera is located. The to parameter is where the camera is looking. The up parameter specifies 
+// which direction is pointing upwards from the camera
+
+// Compute the "forward" vector(to - eyePosition) that points from the camera to the point that we want to view
+// Compute the vector "left" which is the cross product of forward and the normalized up vector
+// Up is an approximation, so you can recompute the "trueUp" vector relative to the eyeToPoint and 
+// left vectors by calculating the cross product of those two vectors
+// The resulting matrix is a 4x4 matrix that looks like this
+// left.x     left.y     left.z     0
+// trueUp.x   trueUp.y   trueUp.z   0
+// -forward.x -forward.y -forward.z 0
+// 0          0          0          1
+
+// Afterwards, multiply this matrix by the translationMatrix(-eyePosition). This is because since you are actually
+// moving the world relative to the camera, you need to orient the scene and then move it to the appropriate position
+// relative to the camera
+Matrix viewTransformationMatrix(Point eyePosition, Point to, Vector up){
+    Vector forward = Vector((to - eyePosition)).normalize();
+    Vector left = crossProduct(forward, up.normalize());
+    Vector trueUp = crossProduct(left, forward);
+    Matrix orientation(4);
+
+    orientation.setElement(0, 0, left.x);
+    orientation.setElement(0, 1, left.y);
+    orientation.setElement(0, 2, left.z);    
+
+    orientation.setElement(1, 0, trueUp.x);
+    orientation.setElement(1, 1, trueUp.y);
+    orientation.setElement(1, 2, trueUp.z);
+
+    orientation.setElement(2, 0, -forward.x);
+    orientation.setElement(2, 1, -forward.y);
+    orientation.setElement(2, 2, -forward.z);
+
+    return (orientation*translationMatrix(-eyePosition.x, -eyePosition.y, -eyePosition.z));
+}
