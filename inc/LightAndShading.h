@@ -66,5 +66,6 @@ public:
 };
 
 // Performs lighting computations. Takes the material, the point that is being lit,
-// the light source, camera vector, and normal vector as input parameters
-Colour computeLighting(Material m, Point p, LightSource l, Vector camera, Vector normal);
+// the light source, camera vector, and normal vector as input parameters.
+// Also, considers if the point has a shadow casted on it by another object
+Colour computeLighting(Material m, Point p, LightSource l, Vector camera, Vector normal, bool inShadow);

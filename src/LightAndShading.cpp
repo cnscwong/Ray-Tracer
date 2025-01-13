@@ -125,15 +125,19 @@ bool Material::isEqual(Material m){
 }
 
 // Calculates the updated colour value of a point based on the ray, light, and object/material attributes
-Colour computeLighting(Material m, Point p, LightSource l, Vector camera, Vector normal){
+Colour computeLighting(Material m, Point p, LightSource l, Vector camera, Vector normal, bool inShadow){
     // Combines the material colour and light colour together
     Colour combinedColour = m.getColour()*l.getIntensity();
 
-    // Vector from the point to the light source
-    Vector lightVector = Vector((l.getPosition() - p)).normalize();
-
     // Computes ambient contribution
     Colour ambient = combinedColour*m.getAmbient();
+
+    if(inShadow){
+        return ambient;
+    }
+
+    // Vector from the point to the light source
+    Vector lightVector = Vector((l.getPosition() - p)).normalize();
 
     // Dot product of light and normal vector, also represents cosine of angle between light and normal
     // vectors. Negative dot product means the light is on the other side of the surface relative to the 

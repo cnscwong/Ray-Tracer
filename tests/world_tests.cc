@@ -118,3 +118,43 @@ TEST(WorldTest, ViewTransformationTest){
     m.setElement(2, 2, -0.71714);
     EXPECT_TRUE(viewTransformationMatrix(cameraPosition, to, up).isEqual(m));
 }
+
+TEST(WorldTest, ShadowTest){
+    Material m;
+    Point position;
+    Vector camera = Vector(0, 0, -1);
+    Vector normal = Vector(0, 0, -1);
+    LightSource light = LightSource(Point(0, 0, -10), Colour(1, 1, 1));
+
+    Colour c = computeLighting(m, position, light, camera, normal, true);
+    EXPECT_TRUE(c.isEqual(Colour(0.1, 0.1, 0.1)));
+
+    // Nothing between point and light
+    World w = defaultWorld();
+    Point p(0, 10, 0);
+    EXPECT_FALSE(w.hasShadow(p));
+
+    // Object between the point and light
+    p = Point(10, -10, 10);
+    EXPECT_TRUE(w.hasShadow(p));
+
+    // Object behind line towards light source
+    p = Point(-20, 20, -20);
+    EXPECT_FALSE(w.hasShadow(p));
+
+    // Object behind the point
+    p = Point(-2, 2, -2);
+    EXPECT_FALSE(w.hasShadow(p));
+
+    w = World();
+    w.setLight(LightSource(Point(0, 0, -10), Colour(1, 1, 1)));
+    w.appendObject(Sphere());
+    Sphere s;
+    s.setTransform(translationMatrix(0, 0, 10));
+    w.appendObject(s);
+
+    Ray r(Point(0, 0, 5), Vector(0, 0, 1));
+    Intersection i(4, s);
+    c = w.shadeHit(prepareLightData(i, r));
+    EXPECT_TRUE(c.isEqual(Colour(0.1, 0.1, 0.1)));
+}

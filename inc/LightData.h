@@ -14,6 +14,11 @@ public:
     Sphere object;
     float time;
     Point point;
+    // Overpoint is close to point and is used for shadows
+    // Overpoint is a little bit farther away from the shape 
+    // than point. This is so that the hasShadow function does
+    // not accidentally find itself when searching for intersections
+    Point overPoint;
     Vector camera;
     Vector normal;
     bool insideObject;

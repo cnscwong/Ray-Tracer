@@ -8,6 +8,7 @@
 #include <vector>
 #include "Ray.h"
 #include "LightData.h"
+#include "Config.h"
 
 // Class to store all objects in the environment
 class World{
@@ -33,6 +34,8 @@ public:
     Colour shadeHit(LightData data);
     // Computes the colour at the first point hit by the ray r
     Colour colourAtHit(Ray r);
+    // Checks if a point p in the world is covered by a shadow(object between point and light source)
+    bool hasShadow(Point p);
 };
 
 // Returns a default world with a light source and two spheres

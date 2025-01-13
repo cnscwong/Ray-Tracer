@@ -52,7 +52,7 @@ std::vector<Intersection> World::RayIntersection(Ray r){
 
 // Returns the computed colour of a hit using the world light source and the LightData data structure
 Colour World::shadeHit(LightData data){
-    return computeLighting(data.object.getMaterial(), data.point, light, data.camera, data.normal);
+    return computeLighting(data.object.getMaterial(), data.overPoint, light, data.camera, data.normal, hasShadow(data.overPoint));
 }
 
 // Computes the colour at the first point hit by the ray r
@@ -79,6 +79,27 @@ Colour World::colourAtHit(Ray r){
     // Uses object that is hit first
     LightData data = prepareLightData(intersects.at(ind), r);
     return this->shadeHit(data);
+}
+
+// Checks if a point has an object covering the light source
+bool World::hasShadow(Point p){
+    if(!RENDER_SHADOWS){
+        return false;
+    }
+
+    Vector v = Vector((light.getPosition() - p));
+    float distance = v.magnitude();
+    Vector direction = v.normalize();
+
+    Ray r(p, direction);
+    std::vector<Intersection> intersects = this->RayIntersection(r);
+
+    int ind = hit(intersects);
+    if(ind != -1 && intersects.at(ind).getTime() < distance){
+        return true;
+    }else{
+        return false;
+    }
 }
 
 // Creates a default world with a light source and two spheres

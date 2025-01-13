@@ -53,7 +53,7 @@ int main(){
     w.appendObject(right);
     w.appendObject(left);
 
-    Camera c(1000, 500, PI/3);
+    Camera c(100, 50, PI/3);
     c.setTransform(viewTransformationMatrix(Point(0, 1.5, -5), Point(0, 1, 0), Vector(0, 1, 0)));
     Canvas canvas = c.render(w);
 

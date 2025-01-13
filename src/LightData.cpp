@@ -8,6 +8,7 @@ LightData::LightData(){
     camera = Vector();
     normal = Vector();
     insideObject = false;
+    overPoint = point + normal*EPSILON;
 }
 
 LightData::LightData(Sphere o, float t, Point p, Vector e, Vector n){
@@ -17,6 +18,7 @@ LightData::LightData(Sphere o, float t, Point p, Vector e, Vector n){
     camera = e;
     normal = n;
     insideObject = false;
+    overPoint = point + normal*EPSILON;
 }
 
 // Packs the data required for the computeLighting function into the LightData data structure
@@ -35,5 +37,6 @@ LightData prepareLightData(Intersection i, Ray r){
         data.normal = Vector(data.normal.negateTuple());
     }
 
+    data.overPoint = data.point + data.normal*EPSILON;
     return data;
 }

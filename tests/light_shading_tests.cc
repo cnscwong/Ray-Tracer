@@ -65,7 +65,7 @@ TEST(LightingTest, CameraBetweenSurfaceAndLight){
     // Light behind the camera
     LightSource light(Point(0, 0, -10), Colour(1, 1, 1));
 
-    Colour result = computeLighting(m, position, light, camera, normal);
+    Colour result = computeLighting(m, position, light, camera, normal, false);
     EXPECT_TRUE(result.isEqual(Colour(1.9, 1.9, 1.9)));
 }
 
@@ -86,7 +86,7 @@ TEST(LightingTest, CameraAboveSurfaceAndLight){
     // Light behind the camera
     LightSource light(Point(0, 0, -10), Colour(1, 1, 1));
 
-    Colour result = computeLighting(m, position, light, camera, normal);
+    Colour result = computeLighting(m, position, light, camera, normal, false);
     EXPECT_TRUE(result.isEqual(Colour(1, 1, 1)));
 }
 
@@ -107,7 +107,7 @@ TEST(LightingTest, LightAboveSurfaceAndCamera){
     // Light behind the camera
     LightSource light(Point(0, 10, -10), Colour(1, 1, 1));
 
-    Colour result = computeLighting(m, position, light, camera, normal);
+    Colour result = computeLighting(m, position, light, camera, normal, false);
     EXPECT_TRUE(result.isEqual(Colour(0.7364, 0.7364, 0.7364)));
 }
 
@@ -134,7 +134,7 @@ TEST(LightingTest, LightAboveSurfaceCameraBelowSurface){
     // Light behind the camera
     LightSource light(Point(0, 10, -10), Colour(1, 1, 1));
 
-    Colour result = computeLighting(m, position, light, camera, normal);
+    Colour result = computeLighting(m, position, light, camera, normal, false);
     EXPECT_TRUE(result.isEqual(Colour(1.6364, 1.6364, 1.6364)));
 }
 
@@ -151,7 +151,7 @@ TEST(LightingTest, LightBehindSurface){
     // Light behind the camera
     LightSource light(Point(0, 0, 10), Colour(1, 1, 1));
 
-    Colour result = computeLighting(m, position, light, camera, normal);
+    Colour result = computeLighting(m, position, light, camera, normal, false);
     EXPECT_TRUE(result.isEqual(Colour(0.1, 0.1, 0.1)));
 }
 
@@ -174,4 +174,16 @@ TEST(LightDataTest, PrepareLightDataTest){
     EXPECT_TRUE(data.camera.isEqual(Vector(0, 0, -1)));
     EXPECT_TRUE(data.normal.isEqual(Vector(0, 0, -1)));
     EXPECT_EQ(data.insideObject, true);
+}
+
+// Test for the overPoint variable in the LightData 
+// Checks that it is a little bit above the object
+TEST(WorldTest, OverpointTest){
+    Ray r(Point(0, 0, -5), Vector(0, 0, 1));
+    Sphere s;
+    s.setTransform(translationMatrix(0, 0, 1));
+    Intersection i(5, s);
+    LightData data = prepareLightData(i, r);
+    EXPECT_TRUE(data.overPoint.z < -EPSILON/2);
+    EXPECT_TRUE(data.point.z > data.overPoint.z);
 }
