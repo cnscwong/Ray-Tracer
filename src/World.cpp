@@ -52,7 +52,7 @@ std::vector<Intersection> World::RayIntersection(Ray r){
 
 // Returns the computed colour of a hit using the world light source and the LightData data structure
 Colour World::shadeHit(LightData data){
-    return computeLighting(data.object.getMaterial(), data.point, light, data.eye, data.normal);
+    return computeLighting(data.object.getMaterial(), data.point, light, data.camera, data.normal);
 }
 
 // Computes the colour at the first point hit by the ray r

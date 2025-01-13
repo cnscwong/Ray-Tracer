@@ -256,7 +256,7 @@ bool Matrix::isInvertable(){
         return false;
     }
 
-    return !floatIsEqual(this->determinant(), 0);
+    return !floatIsEqual(this->determinant(), 0.0f);
 }
 
 // Computes inverse of matrix
@@ -398,6 +398,9 @@ Matrix shearingMatrix(float x_y, float x_z, float y_x, float y_z, float z_x, flo
     return m;
 }
 
+// Chaining transformations, input the matrix transformations as parameters to produce
+// a matrix that performs all transformations at once when multiplied
+// eg. Resulting matrix is equal to C*(B*(A*I)) if input is {A, B, C}
 Matrix chainTransformationMatrices(std::initializer_list<Matrix> matrices){
     Matrix result = Matrix(4);
     for (auto m : matrices) {
@@ -409,13 +412,13 @@ Matrix chainTransformationMatrices(std::initializer_list<Matrix> matrices){
 }
 
 // View transformation matrix. Moves the world relative to the camera. Intuitively, you can think of it as moving
-//  the "camera" around the world to view it from different positions/directions. The eyePosition parameter is the 
+//  the "camera" around the world to view it from different positions/directions. The cameraPosition parameter is the 
 // point where the camera is located. The to parameter is where the camera is looking. The up parameter specifies 
 // which direction is pointing upwards from the camera
 
-// Compute the "forward" vector(to - eyePosition) that points from the camera to the point that we want to view
+// Compute the "forward" vector(to - cameraPosition) that points from the camera to the point that we want to view
 // Compute the vector "left" which is the cross product of forward and the normalized up vector
-// Up is an approximation, so you can recompute the "trueUp" vector relative to the eyeToPoint and 
+// Up is an approximation, so you can recompute the "trueUp" vector relative to the cameraToPoint and 
 // left vectors by calculating the cross product of those two vectors
 // The resulting matrix is a 4x4 matrix that looks like this
 // left.x     left.y     left.z     0
@@ -423,11 +426,11 @@ Matrix chainTransformationMatrices(std::initializer_list<Matrix> matrices){
 // -forward.x -forward.y -forward.z 0
 // 0          0          0          1
 
-// Afterwards, multiply this matrix by the translationMatrix(-eyePosition). This is because since you are actually
+// Afterwards, multiply this matrix by the translationMatrix(-cameraPosition). This is because since you are actually
 // moving the world relative to the camera, you need to orient the scene and then move it to the appropriate position
 // relative to the camera
-Matrix viewTransformationMatrix(Point eyePosition, Point to, Vector up){
-    Vector forward = Vector((to - eyePosition)).normalize();
+Matrix viewTransformationMatrix(Point cameraPosition, Point to, Vector up){
+    Vector forward = Vector((to - cameraPosition)).normalize();
     Vector left = crossProduct(forward, up.normalize());
     Vector trueUp = crossProduct(left, forward);
     Matrix orientation(4);
@@ -444,5 +447,5 @@ Matrix viewTransformationMatrix(Point eyePosition, Point to, Vector up){
     orientation.setElement(2, 1, -forward.y);
     orientation.setElement(2, 2, -forward.z);
 
-    return (orientation*translationMatrix(-eyePosition.x, -eyePosition.y, -eyePosition.z));
+    return orientation*translationMatrix(-cameraPosition.x, -cameraPosition.y, -cameraPosition.z);
 }

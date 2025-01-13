@@ -125,7 +125,7 @@ bool Material::isEqual(Material m){
 }
 
 // Calculates the updated colour value of a point based on the ray, light, and object/material attributes
-Colour computeLighting(Material m, Point p, LightSource l, Vector eye, Vector normal){
+Colour computeLighting(Material m, Point p, LightSource l, Vector camera, Vector normal){
     // Combines the material colour and light colour together
     Colour combinedColour = m.getColour()*l.getIntensity();
 
@@ -137,7 +137,7 @@ Colour computeLighting(Material m, Point p, LightSource l, Vector eye, Vector no
 
     // Dot product of light and normal vector, also represents cosine of angle between light and normal
     // vectors. Negative dot product means the light is on the other side of the surface relative to the 
-    // perspective(eye position)
+    // perspective(camera position)
     float LNdot = dotProduct(lightVector, normal);
     Colour diffuse, specular;
 
@@ -151,11 +151,11 @@ Colour computeLighting(Material m, Point p, LightSource l, Vector eye, Vector no
 
         // Reflected vector of light that bounces on p
         Vector reflection = reflectVector(Vector(lightVector.negateTuple()), normal);
-        // Dot product of light and eye vector. Cosine of angle between reflection vector and eye vector
-        // Negative value means that the reflection points away from the eye
-        float REdot = dotProduct(reflection, eye);
+        // Dot product of light and camera vector. Cosine of angle between reflection vector and camera vector
+        // Negative value means that the reflection points away from the camera
+        float REdot = dotProduct(reflection, camera);
 
-        // If light reflection points away from eye, specular set to black
+        // If light reflection points away from camera, specular set to black
         if(REdot <= 0){
             specular = Colour(0, 0, 0);
         }else{

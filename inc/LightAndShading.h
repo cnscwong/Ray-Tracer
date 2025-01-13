@@ -37,7 +37,7 @@ public:
 // light reflected from other objects in the environment. Diffuse refers
 // to light reflected from a matte surface, dependent on the light source
 // and the surface normal. Specular refers the reflection of the light source
-// itself, depends on the reflection vector and the eye vector(Vector pointing 
+// itself, depends on the reflection vector and the camera vector(Vector pointing 
 // from a p to the origin of the ray) point that the rendered image is captured 
 // from. Shininess controls the brightness of the specular reflection
 class Material{
@@ -66,5 +66,5 @@ public:
 };
 
 // Performs lighting computations. Takes the material, the point that is being lit,
-// the light source, eye vector, and normal vector as input parameters
-Colour computeLighting(Material m, Point p, LightSource l, Vector eye, Vector normal);
+// the light source, camera vector, and normal vector as input parameters
+Colour computeLighting(Material m, Point p, LightSource l, Vector camera, Vector normal);

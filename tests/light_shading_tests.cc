@@ -53,40 +53,40 @@ TEST(MaterialTest, BasicTest){
     EXPECT_TRUE(s.getMaterial().isEqual(m));
 }
 
-// Light       Eye         ||
-TEST(LightingTest, EyeBetweenSurfaceAndLight){
+// Light       Camera         ||
+TEST(LightingTest, CameraBetweenSurfaceAndLight){
     // Material of surface
     Material m;
     // Point the light is bouncing off of
     Point position(0, 0, 0);
-    // Eye and normal vectors
-    Vector eye(0, 0, -1);
+    // Camera and normal vectors
+    Vector camera(0, 0, -1);
     Vector normal(0, 0, -1);
-    // Light behind the eye
+    // Light behind the camera
     LightSource light(Point(0, 0, -10), Colour(1, 1, 1));
 
-    Colour result = computeLighting(m, position, light, eye, normal);
+    Colour result = computeLighting(m, position, light, camera, normal);
     EXPECT_TRUE(result.isEqual(Colour(1.9, 1.9, 1.9)));
 }
 
-//           Eye
+//           Camera
 // 
 // 
 // 
 // Light                ||
-// Eye is 45 degrees off of the normal vector
-TEST(LightingTest, EyeAboveSurfaceAndLight){
+// Camera is 45 degrees off of the normal vector
+TEST(LightingTest, CameraAboveSurfaceAndLight){
     // Material of surface
     Material m;
     // Point the light is bouncing off of
     Point position(0, 0, 0);
-    // Eye and normal vectors
-    Vector eye(0, sqrt(2)/2, -sqrt(2)/2);
+    // Camera and normal vectors
+    Vector camera(0, sqrt(2)/2, -sqrt(2)/2);
     Vector normal(0, 0, -1);
-    // Light behind the eye
+    // Light behind the camera
     LightSource light(Point(0, 0, -10), Colour(1, 1, 1));
 
-    Colour result = computeLighting(m, position, light, eye, normal);
+    Colour result = computeLighting(m, position, light, camera, normal);
     EXPECT_TRUE(result.isEqual(Colour(1, 1, 1)));
 }
 
@@ -94,20 +94,20 @@ TEST(LightingTest, EyeAboveSurfaceAndLight){
 // 
 // 
 // 
-//           Eye         ||
-// Eye is opposite the surface, light is 45 degrees off the normal vector
-TEST(LightingTest, LightAboveSurfaceAndEye){
+//           Camera         ||
+// Camera is opposite the surface, light is 45 degrees off the normal vector
+TEST(LightingTest, LightAboveSurfaceAndCamera){
     // Material of surface
     Material m;
     // Point the light is bouncing off of
     Point position(0, 0, 0);
-    // Eye and normal vectors
-    Vector eye(0, 0, -1);
+    // Camera and normal vectors
+    Vector camera(0, 0, -1);
     Vector normal(0, 0, -1);
-    // Light behind the eye
+    // Light behind the camera
     LightSource light(Point(0, 10, -10), Colour(1, 1, 1));
 
-    Colour result = computeLighting(m, position, light, eye, normal);
+    Colour result = computeLighting(m, position, light, camera, normal);
     EXPECT_TRUE(result.isEqual(Colour(0.7364, 0.7364, 0.7364)));
 }
 
@@ -120,38 +120,38 @@ TEST(LightingTest, LightAboveSurfaceAndEye){
 // 
 // 
 // 
-//             Eye
-// light is 45 degrees off the normal vector, eye is in position
+//             Camera
+// light is 45 degrees off the normal vector, camera is in position
 // where light is reflected into it(Also 45 degrees off normal vector)
-TEST(LightingTest, LightAboveSurfaceEyeBelowSurface){
+TEST(LightingTest, LightAboveSurfaceCameraBelowSurface){
     // Material of surface
     Material m;
     // Point the light is bouncing off of
     Point position(0, 0, 0);
-    // Eye and normal vectors
-    Vector eye(0, -sqrt(2)/2, -sqrt(2)/2);
+    // Camera and normal vectors
+    Vector camera(0, -sqrt(2)/2, -sqrt(2)/2);
     Vector normal(0, 0, -1);
-    // Light behind the eye
+    // Light behind the camera
     LightSource light(Point(0, 10, -10), Colour(1, 1, 1));
 
-    Colour result = computeLighting(m, position, light, eye, normal);
+    Colour result = computeLighting(m, position, light, camera, normal);
     EXPECT_TRUE(result.isEqual(Colour(1.6364, 1.6364, 1.6364)));
 }
 
-// Eye               ||       Light
-// Light is behind surface, eye is opposite surface
+// Camera               ||       Light
+// Light is behind surface, camera is opposite surface
 TEST(LightingTest, LightBehindSurface){
     // Material of surface
     Material m;
     // Point the light is bouncing off of
     Point position(0, 0, 0);
-    // Eye and normal vectors
-    Vector eye(0, 0, -1);
+    // Camera and normal vectors
+    Vector camera(0, 0, -1);
     Vector normal(0, 0, -1);
-    // Light behind the eye
+    // Light behind the camera
     LightSource light(Point(0, 0, 10), Colour(1, 1, 1));
 
-    Colour result = computeLighting(m, position, light, eye, normal);
+    Colour result = computeLighting(m, position, light, camera, normal);
     EXPECT_TRUE(result.isEqual(Colour(0.1, 0.1, 0.1)));
 }
 
@@ -163,7 +163,7 @@ TEST(LightDataTest, PrepareLightDataTest){
     EXPECT_EQ(data.time, 4);
     EXPECT_TRUE(data.object.isEqual(s));
     EXPECT_TRUE(data.point.isEqual(Point(0, 0, -1)));
-    EXPECT_TRUE(data.eye.isEqual(Vector(0, 0, -1)));
+    EXPECT_TRUE(data.camera.isEqual(Vector(0, 0, -1)));
     EXPECT_TRUE(data.normal.isEqual(Vector(0, 0, -1)));
     EXPECT_EQ(data.insideObject, false);
 
@@ -171,7 +171,7 @@ TEST(LightDataTest, PrepareLightDataTest){
     i = Intersection(1, s);
     data = prepareLightData(i, r);
     EXPECT_TRUE(data.point.isEqual(Point(0, 0, 1)));
-    EXPECT_TRUE(data.eye.isEqual(Vector(0, 0, -1)));
+    EXPECT_TRUE(data.camera.isEqual(Vector(0, 0, -1)));
     EXPECT_TRUE(data.normal.isEqual(Vector(0, 0, -1)));
     EXPECT_EQ(data.insideObject, true);
 }

@@ -4,13 +4,7 @@
 Canvas::Canvas(){
     width = DEFAULT_WIDTH;
     height = DEFAULT_HEIGHT;
-
-    // Allocates the rows for pixels
-    pixels = new Colour*[height];
-
-    for(int i = 0; i < height; i++){
-        pixels[i] = new Colour[width];
-    }
+    pixels = std::vector<std::vector<Colour>>(height, std::vector<Colour> (width, Colour()));
 }
 
 Canvas::Canvas(int w, int h){
@@ -26,22 +20,7 @@ Canvas::Canvas(int w, int h){
         height = h;
     }
 
-    // Allocates the rows for pixels
-    pixels = new Colour*[height];
-
-
-    for(int i = 0; i < height; i++){
-        pixels[i] = new Colour[width];
-    }
-}
-
-// Canvas destructor
-Canvas::~Canvas(){
-    for(int i = 0; i < height; i++){
-        delete[] pixels[i];
-    }
-
-    delete[] pixels;
+    pixels = std::vector<std::vector<Colour>>(height, std::vector<Colour> (width, Colour()));
 }
 
 // Getters for width and height
@@ -55,7 +34,7 @@ int Canvas::getHeight(){
 
 // Returns the colour of pixel at position [x][y]
 Colour Canvas::pixelColour(int x, int y){
-    return pixels[y][x];
+    return pixels.at(y).at(x);
 }
 
 // Updates the pixel colour at position [x][y]

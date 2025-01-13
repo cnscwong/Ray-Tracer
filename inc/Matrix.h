@@ -8,7 +8,6 @@
 
 const int DEFAULT_ROWS = 4;
 const int DEFAULT_COLS = 4;
-const float PI = 3.14159265358979323846f;
 
 class Matrix{
     private:
@@ -72,7 +71,7 @@ Matrix shearingMatrix(float x_y, float x_z, float y_x, float y_z, float z_x, flo
 // a matrix that performs all transformations at once when multiplied
 Matrix chainTransformationMatrices(std::initializer_list<Matrix> matrices);
 // View transformation matrix. Moves the world relative to the camera. Intuitively, you can think of it as moving
-//  the "camera" around the world to view it from different positions/directions. The eyePosition parameter is the 
+//  the "camera" around the world to view it from different positions/directions. The cameraPosition parameter is the 
 // point where the camera is located. The to parameter is where the camera is looking. The up parameter specifies 
 // which direction is pointing upwards from the camera
-Matrix viewTransformationMatrix(Point eyePosition, Point to, Vector up);
+Matrix viewTransformationMatrix(Point cameraPosition, Point to, Vector up);

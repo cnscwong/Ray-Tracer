@@ -14,7 +14,7 @@ public:
     Sphere object;
     float time;
     Point point;
-    Vector eye;
+    Vector camera;
     Vector normal;
     bool insideObject;
     

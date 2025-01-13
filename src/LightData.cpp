@@ -5,7 +5,7 @@ LightData::LightData(){
     object = Sphere();
     time = 0;
     point = Point();
-    eye = Vector();
+    camera = Vector();
     normal = Vector();
     insideObject = false;
 }
@@ -14,7 +14,7 @@ LightData::LightData(Sphere o, float t, Point p, Vector e, Vector n){
     object = o;
     time = t;
     point = p;
-    eye = e;
+    camera = e;
     normal = n;
     insideObject = false;
 }
@@ -27,10 +27,10 @@ LightData prepareLightData(Intersection i, Ray r){
     data.object = i.getSphere();
 
     data.point = r.computePosition(data.time);
-    data.eye = Vector(r.getDirection().negateTuple());
+    data.camera = Vector(r.getDirection().negateTuple());
     data.normal = data.object.computeNormal(data.point);
 
-    if(dotProduct(data.normal, data.eye) < 0){
+    if(dotProduct(data.normal, data.camera) < 0){
         data.insideObject = true;
         data.normal = Vector(data.normal.negateTuple());
     }

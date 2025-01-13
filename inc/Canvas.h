@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 const int DEFAULT_WIDTH = 100;
 const int DEFAULT_HEIGHT = 100;
@@ -14,12 +15,11 @@ private:
     // Width and height of canvas
     int width, height;
     // 2D array storing the colour properties of each pixel
-    Colour **pixels;
+    std::vector<std::vector<Colour>> pixels;
 public:
     // Canvas constructors and destructor
     Canvas();
     Canvas(int w, int h);
-    ~Canvas();
 
     // Getters and setters
     int getWidth();

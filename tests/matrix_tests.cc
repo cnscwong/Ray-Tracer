@@ -268,4 +268,5 @@ TEST(MatrixTransformations, ChainingTest){
 
     Matrix transform = chainTransformationMatrices({A, B, C});
     EXPECT_TRUE((transform*p).isEqual(p4));
+    EXPECT_TRUE(transform.isEqual((C*B*A)));
 }
