@@ -6,7 +6,7 @@ World::World(){
 }
 
 // Gets the list of objects in the world
-std::vector<Sphere> World::getObjects(){
+std::vector<Shape*> World::getObjects(){
     return objects;
 }
 
@@ -16,7 +16,7 @@ LightSource World::getLight(){
 }
 
 // Adds an object to the world
-void World::appendObject(Sphere s){
+void World::appendObject(Shape* s){
     objects.push_back(s);
 }
 
@@ -26,7 +26,7 @@ void World::setLight(LightSource l){
 }
 
 // Sets the objects in the world
-void World::setObjects(std::vector<Sphere> obj){
+void World::setObjects(std::vector<Shape*> obj){
     objects = obj;
 }
 
@@ -39,7 +39,7 @@ std::vector<Intersection> World::RayIntersection(Ray r){
     // Adds the intersections of all the objects with the ray into
     // the intersects vector
     for(int i = 0; i < objects.size(); i++){
-        temp = r.RaySphereIntersection(objects.at(i));
+        temp = objects.at(i)->findIntersections(r);
         for(int j = 0; j < temp.size(); j++){
             intersects.push_back(temp.at(j));
         }
@@ -52,7 +52,7 @@ std::vector<Intersection> World::RayIntersection(Ray r){
 
 // Returns the computed colour of a hit using the world light source and the LightData data structure
 Colour World::shadeHit(LightData data){
-    return computeLighting(data.object.getMaterial(), data.overPoint, light, data.camera, data.normal, hasShadow(data.overPoint));
+    return computeLighting(data.object->getMaterial(), data.overPoint, light, data.camera, data.normal, hasShadow(data.overPoint));
 }
 
 // Computes the colour at the first point hit by the ray r
@@ -106,15 +106,15 @@ bool World::hasShadow(Point p){
 World defaultWorld(){
     World w;
 
-    Sphere s1;
+    Shape* s1 = new Sphere;
     Material m;
     m.setColour(Colour(0.8, 1.0, 0.6));
     m.setDiffuse(0.7);
     m.setSpecular(0.2);
-    s1.setMaterial(m);
+    s1->setMaterial(m);
 
-    Sphere s2;
-    s2.setTransform(scalingMatrix(0.5, 0.5, 0.5));
+    Shape* s2 = new Sphere;
+    s2->setTransform(scalingMatrix(0.5, 0.5, 0.5));
 
     LightSource light(Point(-10, 10, -10), Colour(1, 1, 1));
 

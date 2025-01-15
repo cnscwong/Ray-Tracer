@@ -1,6 +1,6 @@
-
 #pragma once
 #include "Sphere.h"
+#include "Shape.h"
 #include "Intersection.h"
 #include "Ray.h"
 #include "Tuple.h"
@@ -11,7 +11,7 @@
 class LightData{
 private:
 public:
-    Sphere object;
+    Shape* object;
     float time;
     Point point;
     // Overpoint is close to point and is used for shadows
@@ -24,7 +24,7 @@ public:
     bool insideObject;
     
     LightData();
-    LightData(Sphere o, float t, Point p, Vector e, Vector n);
+    LightData(Shape* o, float t, Point p, Vector e, Vector n);
 };
 
 // Takes an intersection and ray and prepares them for computeLighting function

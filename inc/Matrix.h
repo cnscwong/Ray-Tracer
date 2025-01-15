@@ -31,6 +31,8 @@ class Matrix{
         void setElement(int x, int y, float val);
         std::vector<std::vector<float>> getMatrix();
 
+        std::string toString();
+
         // Equality check function
         bool isEqual(Matrix a);
 

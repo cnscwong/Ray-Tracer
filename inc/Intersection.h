@@ -1,20 +1,20 @@
 #pragma once
-#include "Sphere.h"
 #include <vector>
+class Shape; // forward declarations
 
 // Class that stores the time and sphere that the intersection occurred at
 class Intersection{
     private:
         // Stores time and sphere that a ray intersected
         float time;
-        Sphere s;
+        Shape* s;
     public:
         // Intersection constructor
-        Intersection(float t, Sphere s);
+        Intersection(float t, Shape* s);
 
         // Getters for Intersection variables
         float getTime();
-        Sphere getSphere();
+        Shape* getShape();
 };
 
 // Function to pack a list of intersections into a vector

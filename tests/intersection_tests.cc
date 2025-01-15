@@ -6,10 +6,10 @@
 
 // Testing the intersections function
 TEST(IntersectionTest, PackingTest){
-    Sphere s;
+    Shape* s = new Sphere;
     Intersection i(3.5, s);
     EXPECT_EQ(i.getTime(), 3.5);
-    EXPECT_TRUE(i.getSphere().isEqual(s));
+    EXPECT_TRUE(i.getShape()->isEqual(s));
     Intersection i1(1, s);
     Intersection i2(2, s);
     std::vector<Intersection> intersects = intersections({i1, i2});
@@ -20,7 +20,7 @@ TEST(IntersectionTest, PackingTest){
 
 // Testing the hits function
 TEST(IntersectionTest, FindingHits){
-    Sphere s;
+    Sphere* s = new Sphere;
     Intersection i1(1, s);
     Intersection i2(2, s);
     std::vector<Intersection> intersects = intersections({i2, i1});

@@ -102,6 +102,20 @@ std::vector<std::vector<float>> Matrix::getMatrix(){
     return matrix;
 }
 
+// Converts matrix to string
+std::string Matrix::toString(){
+    std::string s = "";
+    for(int r = 0; r < rows; r++){
+        s += "[";
+        for(int c = 0; c < cols; c++){
+            s += std::to_string(getElement(r, c)) + " ";
+        }
+        s += "]\n";
+    }
+
+    return s;
+}
+
 // Matrix equality check
 bool Matrix::isEqual(Matrix a){
     if(rows != a.getRows() || cols != a.getCols()){
@@ -263,7 +277,7 @@ bool Matrix::isInvertable(){
 // Element [r, c] = cofactor(c, r)/det
 Matrix Matrix::inverse(){
     if(!this->isInvertable()){
-        throw std::invalid_argument("inverse: Matrix is not invertable");
+        throw std::invalid_argument("inverse: Matrix is not invertable\n" + toString());
     }
 
     Matrix m(rows, cols);

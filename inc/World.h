@@ -9,24 +9,25 @@
 #include "Ray.h"
 #include "LightData.h"
 #include "Config.h"
+#include "Shape.h"
 
 // Class to store all objects in the environment
 class World{
 private:
     // Stores all objects in the world and the light source
-    std::vector<Sphere> objects;
+    std::vector<Shape*> objects;
     LightSource light;
 public:
-    // World constructors
+    // World constructor
     World();
 
     // Getters and setters for variables
-    std::vector<Sphere> getObjects();
+    std::vector<Shape*> getObjects();
     LightSource getLight();
 
-    void appendObject(Sphere s);
+    void appendObject(Shape* s);
     void setLight(LightSource l);
-    void setObjects(std::vector<Sphere> obj);
+    void setObjects(std::vector<Shape*> obj);
 
     // Returns a vector of intersection objects where the ray r intersects the surface of an object in the world
     std::vector<Intersection> RayIntersection(Ray r);

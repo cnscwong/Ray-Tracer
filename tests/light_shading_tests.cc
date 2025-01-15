@@ -2,19 +2,20 @@
 #include "Sphere.h"
 #include "LightAndShading.h"
 #include "LightData.h"
+#include "Shape.h"
 
 TEST(SphereTest, NormalVectorTest){
-    Sphere s;
-    EXPECT_TRUE(s.computeNormal(Point(1, 0, 0)).isEqual(Vector(1, 0, 0)));
-    EXPECT_TRUE(s.computeNormal(Point(0, 1, 0)).isEqual(Vector(0, 1, 0)));
-    EXPECT_TRUE(s.computeNormal(Point(0, 0, 1)).isEqual(Vector(0, 0, 1)));
-    EXPECT_TRUE(s.computeNormal(Point(sqrt(3)/3, sqrt(3)/3, sqrt(3)/3)).isEqual(Vector(sqrt(3)/3, sqrt(3)/3, sqrt(3)/3)));
-    Vector temp = s.computeNormal(Point(sqrt(3)/3, sqrt(3)/3, sqrt(3)/3));
+    Shape* s = new Sphere;
+    EXPECT_TRUE(s->computeNormal(Point(1, 0, 0)).isEqual(Vector(1, 0, 0)));
+    EXPECT_TRUE(s->computeNormal(Point(0, 1, 0)).isEqual(Vector(0, 1, 0)));
+    EXPECT_TRUE(s->computeNormal(Point(0, 0, 1)).isEqual(Vector(0, 0, 1)));
+    EXPECT_TRUE(s->computeNormal(Point(sqrt(3)/3, sqrt(3)/3, sqrt(3)/3)).isEqual(Vector(sqrt(3)/3, sqrt(3)/3, sqrt(3)/3)));
+    Vector temp = s->computeNormal(Point(sqrt(3)/3, sqrt(3)/3, sqrt(3)/3));
     EXPECT_TRUE(temp.isEqual(temp.normalize()));
-    s.setTransform(translationMatrix(0, 1, 0));
-    EXPECT_TRUE(s.computeNormal(Point(0, 1.70711, -0.70711)).isEqual(Vector(0, 0.70711, -0.70711)));
-    s.setTransform((scalingMatrix(1, 0.5, 1)*zRotationMatrix(PI/5)));
-    EXPECT_TRUE(s.computeNormal(Point(0, sqrt(2)/2, -sqrt(2)/2)).isEqual(Vector(0, 0.97014, -0.24254)));
+    s->setTransform(translationMatrix(0, 1, 0));
+    EXPECT_TRUE(s->computeNormal(Point(0, 1.70711, -0.70711)).isEqual(Vector(0, 0.70711, -0.70711)));
+    s->setTransform((scalingMatrix(1, 0.5, 1)*zRotationMatrix(PI/5)));
+    EXPECT_TRUE(s->computeNormal(Point(0, sqrt(2)/2, -sqrt(2)/2)).isEqual(Vector(0, 0.97014, -0.24254)));
 }
 
 TEST(LightShadingTest, ReflectionTest){
@@ -157,11 +158,11 @@ TEST(LightingTest, LightBehindSurface){
 
 TEST(LightDataTest, PrepareLightDataTest){
     Ray r(Point(0, 0, -5), Vector(0, 0, 1));
-    Sphere s;
+    Sphere* s = new Sphere;
     Intersection i(4, s);
     LightData data = prepareLightData(i, r);
     EXPECT_EQ(data.time, 4);
-    EXPECT_TRUE(data.object.isEqual(s));
+    EXPECT_TRUE(data.object->isEqual(s));
     EXPECT_TRUE(data.point.isEqual(Point(0, 0, -1)));
     EXPECT_TRUE(data.camera.isEqual(Vector(0, 0, -1)));
     EXPECT_TRUE(data.normal.isEqual(Vector(0, 0, -1)));
@@ -180,8 +181,8 @@ TEST(LightDataTest, PrepareLightDataTest){
 // Checks that it is a little bit above the object
 TEST(WorldTest, OverpointTest){
     Ray r(Point(0, 0, -5), Vector(0, 0, 1));
-    Sphere s;
-    s.setTransform(translationMatrix(0, 0, 1));
+    Sphere* s = new Sphere;
+    s->setTransform(translationMatrix(0, 0, 1));
     Intersection i(5, s);
     LightData data = prepareLightData(i, r);
     EXPECT_TRUE(data.overPoint.z < -EPSILON/2);

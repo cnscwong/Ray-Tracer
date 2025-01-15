@@ -1,7 +1,8 @@
 #include "Intersection.h"
+#include "Shape.h"
 
 // Intersection constructor
-Intersection::Intersection(float t, Sphere s){
+Intersection::Intersection(float t, Shape* s){
     time = t;
     this->s = s;
 }
@@ -11,7 +12,7 @@ float Intersection::getTime(){
     return time;
 }
 
-Sphere Intersection::getSphere(){
+Shape* Intersection::getShape(){
     return s;
 }
 

@@ -1,7 +1,5 @@
 #pragma once
 #include "Tuple.h"
-#include "Sphere.h"
-#include "Intersection.h"
 #include "Matrix.h"
 #include <vector>
 #include <algorithm>
@@ -24,10 +22,7 @@ class Ray{
 
         // Computes the position of the ray at time t
         Tuple computePosition(float t);
-
-        // Returns a vector of intersection objects where the ray intersects the surface of the sphere s
-        std::vector<Intersection> RaySphereIntersection(Sphere s);
-
+        
         // Returns a ray that is transformed by the matrix m
         Ray transform(Matrix m);
 };

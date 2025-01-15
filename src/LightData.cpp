@@ -2,7 +2,7 @@
 
 // Light data constructors
 LightData::LightData(){
-    object = Sphere();
+    object = new Sphere;
     time = 0;
     point = Point();
     camera = Vector();
@@ -11,7 +11,7 @@ LightData::LightData(){
     overPoint = point + normal*EPSILON;
 }
 
-LightData::LightData(Sphere o, float t, Point p, Vector e, Vector n){
+LightData::LightData(Shape* o, float t, Point p, Vector e, Vector n){
     object = o;
     time = t;
     point = p;
@@ -26,11 +26,11 @@ LightData prepareLightData(Intersection i, Ray r){
     LightData data;
 
     data.time = i.getTime();
-    data.object = i.getSphere();
+    data.object = i.getShape();
 
     data.point = r.computePosition(data.time);
     data.camera = Vector(r.getDirection().negateTuple());
-    data.normal = data.object.computeNormal(data.point);
+    data.normal = data.object->computeNormal(data.point);
 
     if(dotProduct(data.normal, data.camera) < 0){
         data.insideObject = true;
