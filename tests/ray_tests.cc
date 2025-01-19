@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 #include "Ray.h"
-#include "Sphere.h"
 #include "Shape.h"
 #include "common.h"
 #include "Intersection.h"
@@ -61,6 +60,7 @@ TEST(RayTest, IntersectionTest){
     EXPECT_TRUE(floatIsEqual(intersections.at(1).getTime(), -4.0));
     EXPECT_TRUE(intersections.at(0).getShape()->isEqual(s));
     EXPECT_TRUE(intersections.at(1).getShape()->isEqual(s));
+    delete s;
 }
 
 TEST(RayTest, TransformTest){

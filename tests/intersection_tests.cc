@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include "Ray.h"
-#include "Sphere.h"
+#include "Shape.h"
 #include "common.h"
 #include "Intersection.h"
 
@@ -16,6 +16,7 @@ TEST(IntersectionTest, PackingTest){
     EXPECT_EQ(intersects.size(), 2);
     EXPECT_EQ(intersects.at(0).getTime(), 1);
     EXPECT_EQ(intersects.at(1).getTime(), 2);
+    delete s;
 }
 
 // Testing the hits function
@@ -46,4 +47,5 @@ TEST(IntersectionTest, FindingHits){
     intersects = intersections({i1, i2, i3, i4});
     ind = hit(intersects);
     EXPECT_EQ(ind, 3);
+    delete s;
 }

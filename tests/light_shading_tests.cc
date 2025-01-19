@@ -1,5 +1,4 @@
 #include <gtest/gtest.h>
-#include "Sphere.h"
 #include "LightAndShading.h"
 #include "LightData.h"
 #include "Shape.h"
@@ -16,6 +15,7 @@ TEST(SphereTest, NormalVectorTest){
     EXPECT_TRUE(s->computeNormal(Point(0, 1.70711, -0.70711)).isEqual(Vector(0, 0.70711, -0.70711)));
     s->setTransform((scalingMatrix(1, 0.5, 1)*zRotationMatrix(PI/5)));
     EXPECT_TRUE(s->computeNormal(Point(0, sqrt(2)/2, -sqrt(2)/2)).isEqual(Vector(0, 0.97014, -0.24254)));
+    delete s;
 }
 
 TEST(LightShadingTest, ReflectionTest){
@@ -175,6 +175,7 @@ TEST(LightDataTest, PrepareLightDataTest){
     EXPECT_TRUE(data.camera.isEqual(Vector(0, 0, -1)));
     EXPECT_TRUE(data.normal.isEqual(Vector(0, 0, -1)));
     EXPECT_EQ(data.insideObject, true);
+    delete s;
 }
 
 // Test for the overPoint variable in the LightData 
@@ -187,4 +188,5 @@ TEST(WorldTest, OverpointTest){
     LightData data = prepareLightData(i, r);
     EXPECT_TRUE(data.overPoint.z < -EPSILON/2);
     EXPECT_TRUE(data.point.z > data.overPoint.z);
+    delete s;
 }

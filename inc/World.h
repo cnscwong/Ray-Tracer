@@ -1,5 +1,4 @@
 #pragma once
-#include "Sphere.h"
 #include "LightAndShading.h"
 #include "Matrix.h"
 #include "Colour.h"

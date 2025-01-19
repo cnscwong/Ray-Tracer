@@ -1,5 +1,4 @@
 #pragma once
-#include "Sphere.h"
 #include "Shape.h"
 #include "Intersection.h"
 #include "Ray.h"

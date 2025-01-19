@@ -2,7 +2,6 @@
 #include "World.h"
 #include "Ray.h"
 #include "Shape.h"
-#include "Sphere.h"
 
 TEST(WorldTest, BasicTest){
     World w;
@@ -26,6 +25,8 @@ TEST(WorldTest, BasicTest){
     EXPECT_TRUE(w.getObjects().at(0)->isEqual(s1));
     EXPECT_TRUE(w.getObjects().at(1)->isEqual(s2));
     EXPECT_TRUE(w.getLight().isEqual(l));
+    delete s1;
+    delete s2;
 }
 
 TEST(WorldTest, IntersectWorldTest){
@@ -150,14 +151,17 @@ TEST(WorldTest, ShadowTest){
     EXPECT_FALSE(w.hasShadow(p));
 
     w = World();
+    Sphere* s1 = new Sphere;
+    Sphere* s2 = new Sphere;
     w.setLight(LightSource(Point(0, 0, -10), Colour(1, 1, 1)));
-    w.appendObject(new Sphere);
-    Sphere* s = new Sphere;
-    s->setTransform(translationMatrix(0, 0, 10));
-    w.appendObject(s);
+    w.appendObject(s1);
+    s2->setTransform(translationMatrix(0, 0, 10));
+    w.appendObject(s2);
 
     Ray r(Point(0, 0, 5), Vector(0, 0, 1));
-    Intersection i(4, s);
+    Intersection i(4, s2);
     c = w.shadeHit(prepareLightData(i, r));
     EXPECT_TRUE(c.isEqual(Colour(0.1, 0.1, 0.1)));
+    delete s1;
+    delete s2;
 }
