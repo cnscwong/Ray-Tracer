@@ -46,6 +46,10 @@ Colour Material::getColour(){
     return c;
 }
 
+Pattern* Material::getPattern(){
+    return pattern;
+}
+
 float Material::getAmbient(){
     return ambient;
 }
@@ -65,6 +69,10 @@ float Material::getShininess(){
 // Material setters
 void Material::setColour(Colour col){
     this->c = col;
+}
+
+void Material::setPattern(Pattern* p){
+    this->pattern = p;
 }
 
 void Material::setAmbient(float a){
@@ -125,9 +133,16 @@ bool Material::isEqual(Material m){
 }
 
 // Calculates the updated colour value of a point based on the ray, light, and object/material attributes
-Colour computeLighting(Material m, Point p, LightSource l, Vector camera, Vector normal, bool inShadow){
+Colour computeLighting(Material m, Shape* object, LightSource l, Point p, Vector camera, Vector normal, bool inShadow){
+    Colour colour;
+    if(m.getPattern() == nullptr){
+        colour = m.getColour();
+    }else{
+        colour = m.getPattern()->applyPattern(object, p);
+    }
+
     // Combines the material colour and light colour together
-    Colour combinedColour = m.getColour()*l.getIntensity();
+    Colour combinedColour = colour*l.getIntensity();
 
     // Computes ambient contribution
     Colour ambient = combinedColour*m.getAmbient();

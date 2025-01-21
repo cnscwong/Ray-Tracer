@@ -3,3 +3,5 @@
 
 // Setting to enable/disable shadows
 const bool RENDER_SHADOWS = true;
+
+// TODO: PATTERNS

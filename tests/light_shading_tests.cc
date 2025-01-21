@@ -66,8 +66,12 @@ TEST(LightingTest, CameraBetweenSurfaceAndLight){
     // Light behind the camera
     LightSource light(Point(0, 0, -10), Colour(1, 1, 1));
 
-    Colour result = computeLighting(m, position, light, camera, normal, false);
+    Shape* s = new Shape;
+
+    Colour result = computeLighting(m, s, light, position, camera, normal, false);
     EXPECT_TRUE(result.isEqual(Colour(1.9, 1.9, 1.9)));
+    delete s;
+    s = nullptr;
 }
 
 //           Camera
@@ -87,8 +91,12 @@ TEST(LightingTest, CameraAboveSurfaceAndLight){
     // Light behind the camera
     LightSource light(Point(0, 0, -10), Colour(1, 1, 1));
 
-    Colour result = computeLighting(m, position, light, camera, normal, false);
+    Shape* s = new Shape;
+
+    Colour result = computeLighting(m, s, light, position, camera, normal, false);
     EXPECT_TRUE(result.isEqual(Colour(1, 1, 1)));
+    delete s;
+    s = nullptr;
 }
 
 //           Light
@@ -108,8 +116,12 @@ TEST(LightingTest, LightAboveSurfaceAndCamera){
     // Light behind the camera
     LightSource light(Point(0, 10, -10), Colour(1, 1, 1));
 
-    Colour result = computeLighting(m, position, light, camera, normal, false);
+    Shape* s = new Shape;
+
+    Colour result = computeLighting(m, s, light, position, camera, normal, false);
     EXPECT_TRUE(result.isEqual(Colour(0.7364, 0.7364, 0.7364)));
+    delete s;
+    s = nullptr;
 }
 
 //           Light
@@ -135,8 +147,12 @@ TEST(LightingTest, LightAboveSurfaceCameraBelowSurface){
     // Light behind the camera
     LightSource light(Point(0, 10, -10), Colour(1, 1, 1));
 
-    Colour result = computeLighting(m, position, light, camera, normal, false);
+    Shape* s = new Shape;
+
+    Colour result = computeLighting(m, s, light, position, camera, normal, false);
     EXPECT_TRUE(result.isEqual(Colour(1.6364, 1.6364, 1.6364)));
+    delete s;
+    s = nullptr;
 }
 
 // Camera               ||       Light
@@ -152,8 +168,12 @@ TEST(LightingTest, LightBehindSurface){
     // Light behind the camera
     LightSource light(Point(0, 0, 10), Colour(1, 1, 1));
 
-    Colour result = computeLighting(m, position, light, camera, normal, false);
+    Shape* s = new Shape;
+
+    Colour result = computeLighting(m, s, light, position, camera, normal, false);
     EXPECT_TRUE(result.isEqual(Colour(0.1, 0.1, 0.1)));
+    delete s;
+    s = nullptr;
 }
 
 TEST(LightDataTest, PrepareLightDataTest){

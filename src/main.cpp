@@ -8,21 +8,27 @@
 #include "World.h"
 #include "Camera.h"
 #include "common.h"
+#include "Pattern.h"
 #include <cmath>
 
 int main(){
+    Stripes* stripes = new Stripes({WHITE, Colour(1, 0, 0)});
+    stripes->transform = zRotationMatrix(PI/4)*xRotationMatrix(PI/2);
+
     // Floor is actually just an extremely flattened sphere
     Plane* floor = new Plane;
     Material m;
     m.setColour(Colour(1, 0.9, 0.9));
+    m.setPattern(stripes);
     floor->setMaterial(m);
 
     Sphere* middle = new Sphere;
-    middle->setTransform(translationMatrix(-0.5, 1, 0.5));
+    middle->setTransform(translationMatrix(-0.5, 1, 0.5)*zRotationMatrix(PI/2));
     m = Material();
     m.setColour(Colour(0.1, 1, 0.5));
     m.setDiffuse(0.7);
     m.setSpecular(0.3);
+    m.setPattern(stripes);
     middle->setMaterial(m);
 
     Sphere* right = new Sphere;
@@ -48,10 +54,16 @@ int main(){
 
     canvas.writeToFile("out.ppm");
 
+    delete stripes;
     delete floor;
     delete middle;
     delete right;
     delete left;
+    stripes = nullptr;
+    floor = nullptr;
+    middle = nullptr;
+    right = nullptr;
+    left = nullptr;
 
     return 0;
 }

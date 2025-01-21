@@ -16,3 +16,7 @@ public:
     Colour operator*(Colour a);
     Colour operator*(float scale);
 };
+
+// Colour constants
+const Colour BLACK = Colour();
+const Colour WHITE = Colour(1, 1, 1);

@@ -3,6 +3,7 @@
 #include "Colour.h"
 #include <stdexcept>
 #include "common.h"
+#include "Pattern.h"
 
 // File to store functions to simulate light reflection and shading
 
@@ -43,6 +44,7 @@ public:
 class Material{
 private:
     Colour c;
+    Pattern* pattern = nullptr;
     float ambient, diffuse, specular, shininess;
 public:
     // Material constructor
@@ -50,12 +52,14 @@ public:
 
     // Variable getters and setters
     Colour getColour();
+    Pattern* getPattern();
     float getAmbient();
     float getDiffuse();
     float getSpecular();
     float getShininess();
 
     void setColour(Colour col);
+    void setPattern(Pattern* p);
     void setAmbient(float a);
     void setDiffuse(float d);
     void setSpecular(float s);
@@ -68,4 +72,4 @@ public:
 // Performs lighting computations. Takes the material, the point that is being lit,
 // the light source, camera vector, and normal vector as input parameters.
 // Also, considers if the point has a shadow casted on it by another object
-Colour computeLighting(Material m, Point p, LightSource l, Vector camera, Vector normal, bool inShadow);
+Colour computeLighting(Material m, Shape* object, LightSource l, Point p, Vector camera, Vector normal, bool inShadow);

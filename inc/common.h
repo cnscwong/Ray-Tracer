@@ -2,6 +2,7 @@
 #include <cmath>
 #include <vector>
 
+// Constant for pi
 const float PI = 3.14159265358979323846f;
 
 // Threshold to check float equality |a - b| < EPSILON

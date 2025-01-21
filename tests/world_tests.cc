@@ -130,8 +130,12 @@ TEST(WorldTest, ShadowTest){
     Vector normal = Vector(0, 0, -1);
     LightSource light = LightSource(Point(0, 0, -10), Colour(1, 1, 1));
 
-    Colour c = computeLighting(m, position, light, camera, normal, true);
+    Shape* s = new Shape;
+
+    Colour c = computeLighting(m, s, light, position, camera, normal, true);
     EXPECT_TRUE(c.isEqual(Colour(0.1, 0.1, 0.1)));
+    delete s;
+    s = nullptr;
 
     // Nothing between point and light
     World w = defaultWorld();
