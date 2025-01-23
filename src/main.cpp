@@ -12,33 +12,38 @@
 #include <cmath>
 
 int main(){
-    Stripes* stripes = new Stripes({WHITE, Colour(1, 0, 0)});
-    stripes->transform = zRotationMatrix(PI/4)*xRotationMatrix(PI/2);
+    CheckerPattern* p1 = new CheckerPattern({WHITE, Colour(0.1, 0.3, 0.9)});
+    LinearGradient* p2 = new LinearGradient({Colour(0.34, 0.89, 0.89), Colour(0.31, 1, 0.44)});
+    p2->setTransform(translationMatrix(1.5, -1, -0.5)*scalingMatrix(2.5, 1, 1));
+    RingPattern* p3 = new RingPattern({Colour(0, 0, 1), Colour(0.5, 0, 1)});
+    p3->setTransform(translationMatrix(-1.5, -0.5, 0.5));
+    Stripes* p4 = new Stripes({Colour(1, 0.65, 0), Colour(1, 1, 0)});
 
-    // Floor is actually just an extremely flattened sphere
     Plane* floor = new Plane;
     Material m;
     m.setColour(Colour(1, 0.9, 0.9));
-    m.setPattern(stripes);
+    m.setPattern(p1);
     floor->setMaterial(m);
 
     Sphere* middle = new Sphere;
-    middle->setTransform(translationMatrix(-0.5, 1, 0.5)*zRotationMatrix(PI/2));
+    middle->setTransform(translationMatrix(-0.5, 1, 0.5));
     m = Material();
     m.setColour(Colour(0.1, 1, 0.5));
     m.setDiffuse(0.7);
     m.setSpecular(0.3);
-    m.setPattern(stripes);
+    m.setPattern(p2);
     middle->setMaterial(m);
 
     Sphere* right = new Sphere;
     right->setTransform(translationMatrix(1.5, 0.5, -0.5)*scalingMatrix(0.5, 0.5, 0.5));
     m.setColour(Colour(0.5, 1, 0.1));
+    m.setPattern(p3);
     right->setMaterial(m);
 
     Sphere* left = new Sphere;
     left->setTransform(translationMatrix(-1.5, 0.33, -0.75)*scalingMatrix(0.33, 0.33, 0.33));
     m.setColour(Colour(1, 0.8, 0.1));
+    m.setPattern(p4);
     left->setMaterial(m);
 
     World w;
@@ -48,18 +53,16 @@ int main(){
     w.appendObject(right);
     w.appendObject(left);
 
-    Camera c(100, 50, PI/3);
+    Camera c(1000, 500, PI/3);
     c.setTransform(viewTransformationMatrix(Point(0, 1.5, -5), Point(0, 1, 0), Vector(0, 1, 0)));
     Canvas canvas = c.render(w);
 
     canvas.writeToFile("out.ppm");
 
-    delete stripes;
     delete floor;
     delete middle;
     delete right;
     delete left;
-    stripes = nullptr;
     floor = nullptr;
     middle = nullptr;
     right = nullptr;

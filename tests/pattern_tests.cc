@@ -74,15 +74,15 @@ TEST(StripesTest, StripesConstructor){
     
     // Act
     bool s1TransformIsIdentityMatrix = s1.getTransform().isEqual(Matrix(4));
-    bool s1HasTwoStripes = s1.stripes.size() == 2;
-    bool firstS1StripeIsWhite = s1.stripes.at(0).isEqual(WHITE);
-    bool secondS1StripeIsBlack = s1.stripes.at(1).isEqual(BLACK);
+    bool s1HasTwoStripes = s1.colours.size() == 2;
+    bool firstS1StripeIsWhite = s1.colours.at(0).isEqual(WHITE);
+    bool secondS1StripeIsBlack = s1.colours.at(1).isEqual(BLACK);
 
     bool s2TransformIsIdentityMatrix = s2.getTransform().isEqual(Matrix(4));
-    bool s2HasThreeStripes = s2.stripes.size() == 3;
-    bool firstS2StripeIsRed = s2.stripes.at(0).isEqual(Colour(1, 0, 0));
-    bool secondS2StripeIsGreen = s2.stripes.at(1).isEqual(Colour(0, 1, 0));
-    bool thirdS2StripeIsBlue = s2.stripes.at(2).isEqual(Colour(0, 0, 1));
+    bool s2HasThreeStripes = s2.colours.size() == 3;
+    bool firstS2StripeIsRed = s2.colours.at(0).isEqual(Colour(1, 0, 0));
+    bool secondS2StripeIsGreen = s2.colours.at(1).isEqual(Colour(0, 1, 0));
+    bool thirdS2StripeIsBlue = s2.colours.at(2).isEqual(Colour(0, 0, 1));
 
     // Assert
     EXPECT_TRUE(s1TransformIsIdentityMatrix);
@@ -138,7 +138,7 @@ TEST(FunctionTest, ComputeLighting_AppliesStripePattern){
     EXPECT_TRUE(c2.isEqual(BLACK));
 }
 
-TEST(PatternTest, ApplyPattern_AppliesStripesWithObjectTransformation){
+TEST(PatternTest, ApplyPattern_AppliesPatternWithObjectTransformation){
     Sphere* s = new Sphere;
     s->setTransform(scalingMatrix(2, 2, 2));
     Stripes* stripes = new Stripes;
@@ -148,7 +148,7 @@ TEST(PatternTest, ApplyPattern_AppliesStripesWithObjectTransformation){
     EXPECT_TRUE(c.isEqual(WHITE));
 }
 
-TEST(PatternTest, ApplyPattern_AppliesStripesWithPatternTransformation){
+TEST(PatternTest, ApplyPattern_AppliesPatternWithPatternTransformation){
     Sphere* s = new Sphere;
     Stripes* stripes = new Stripes;
     stripes->setTransform(scalingMatrix(2, 2, 2));
@@ -158,7 +158,7 @@ TEST(PatternTest, ApplyPattern_AppliesStripesWithPatternTransformation){
     EXPECT_TRUE(c.isEqual(WHITE));
 }
 
-TEST(PatternTest, ApplyPattern_AppliesStripesWithObjectAndPatternTransformation){
+TEST(PatternTest, ApplyPattern_AppliesPatternWithObjectAndPatternTransformation){
     Sphere* s = new Sphere;
     s->setTransform(scalingMatrix(2, 2, 2));
     Stripes* stripes = new Stripes;
@@ -167,4 +167,37 @@ TEST(PatternTest, ApplyPattern_AppliesStripesWithObjectAndPatternTransformation)
     Colour c = stripes->applyPattern(s, Point(2.5, 0, 0));
 
     EXPECT_TRUE(c.isEqual(WHITE));
+}
+
+TEST(LinearGradientTest, ChildApplyPattern_AppliesLinearGradientPattern){
+    LinearGradient p;
+    
+    EXPECT_TRUE(p.ChildApplyPattern(Point()).isEqual(WHITE));
+    EXPECT_TRUE(p.ChildApplyPattern(Point(0.25, 0, 0)).isEqual(Colour(0.75, 0.75, 0.75)));
+    EXPECT_TRUE(p.ChildApplyPattern(Point(0.5, 0, 0)).isEqual(Colour(0.5, 0.5, 0.5)));
+    EXPECT_TRUE(p.ChildApplyPattern(Point(0.75, 0, 0)).isEqual(Colour(0.25, 0.25, 0.25)));
+}
+
+TEST(RingPatternTest, ChildApplyPattern_AppliesRingPatternPattern){
+    RingPattern p;
+    
+    EXPECT_TRUE(p.ChildApplyPattern(Point()).isEqual(WHITE));
+    EXPECT_TRUE(p.ChildApplyPattern(Point(1, 0, 0)).isEqual(BLACK));
+    EXPECT_TRUE(p.ChildApplyPattern(Point(0, 0, 1)).isEqual(BLACK));
+    EXPECT_TRUE(p.ChildApplyPattern(Point(0.708, 0, 0.708)).isEqual(BLACK));
+}
+
+TEST(CheckerPatternTest, ChildApplyPattern_AppliesCheckerPatternPattern){
+    CheckerPattern p;
+    
+    EXPECT_TRUE(p.ChildApplyPattern(Point()).isEqual(WHITE));
+
+    EXPECT_TRUE(p.ChildApplyPattern(Point(0.99, 0, 0)).isEqual(WHITE));
+    EXPECT_TRUE(p.ChildApplyPattern(Point(1.01, 0, 0)).isEqual(BLACK));
+
+    EXPECT_TRUE(p.ChildApplyPattern(Point(0, 0.99, 0)).isEqual(WHITE));
+    EXPECT_TRUE(p.ChildApplyPattern(Point(0, 1.01, 0)).isEqual(BLACK));
+
+    EXPECT_TRUE(p.ChildApplyPattern(Point(0, 0, 0.99)).isEqual(WHITE));
+    EXPECT_TRUE(p.ChildApplyPattern(Point(0, 0, 1.01)).isEqual(BLACK));
 }

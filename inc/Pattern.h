@@ -10,6 +10,7 @@ class Shape; // forward declaration of shape
 // The transform is used to manipulate the pattern on objects(eg. make it larger, rotate it)
 class Pattern{
 public:
+    std::vector<Colour> colours = std::vector<Colour>({WHITE, BLACK});
     Matrix transform = Matrix(4);
 
     Matrix getTransform();
@@ -19,13 +20,39 @@ public:
     virtual Colour ChildApplyPattern(Point p);
 };
 
-// Will apply stripes to the object
 class Stripes : public Pattern{
 public:
-    std::vector<Colour> stripes;
-
     Stripes();
     Stripes(std::initializer_list<Colour> colours);
+
+    // Pattern override
+    Colour ChildApplyPattern(Point p);
+};
+
+class LinearGradient : public Pattern{
+public:
+    LinearGradient();
+    LinearGradient(std::initializer_list<Colour> colours);
+
+    // Pattern override
+    Colour ChildApplyPattern(Point p);
+};
+
+// Depends on x and z value, think of a archery target
+class RingPattern : public Pattern{
+public:
+    RingPattern();
+    RingPattern(std::initializer_list<Colour> colours);
+
+    // Pattern override
+    Colour ChildApplyPattern(Point p);
+};
+
+// Depends on x, y, and z value
+class CheckerPattern : public Pattern{
+public:
+    CheckerPattern();
+    CheckerPattern(std::initializer_list<Colour> colours);
 
     // Pattern override
     Colour ChildApplyPattern(Point p);

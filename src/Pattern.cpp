@@ -22,13 +22,68 @@ Colour Pattern::ChildApplyPattern(Point p){
 }
 
 Stripes::Stripes(){
-    stripes = std::vector<Colour>({WHITE, BLACK});
+    colours = std::vector<Colour>({WHITE, BLACK});
 }
 
 Stripes::Stripes(std::initializer_list<Colour> colours){
-    stripes = std::vector<Colour>(colours);
+    this->colours = std::vector<Colour>(colours);
+
+    if(colours.size() == 0){
+        this->colours = std::vector<Colour>({WHITE, BLACK});
+    }
 }
 
 Colour Stripes::ChildApplyPattern(Point p){
-    return stripes.at((int)floor(p.x) % stripes.size());
+    return colours.at((int)floor(p.x) % colours.size());
+}
+
+LinearGradient::LinearGradient(){
+    colours = std::vector<Colour>({WHITE, BLACK});
+}
+
+LinearGradient::LinearGradient(std::initializer_list<Colour> colours){
+    if(colours.size() == 2){
+        this->colours = std::vector<Colour>(colours);
+    }else{
+        this->colours = std::vector<Colour>({WHITE, BLACK});
+    }
+}
+
+Colour LinearGradient::ChildApplyPattern(Point p){
+    Colour colourDistance = colours.at(1) - colours.at(0);
+    float pointDistance = p.x - (float)floor(p.x);
+
+    return colours.at(0) + colourDistance*pointDistance;
+}
+
+RingPattern::RingPattern(){
+    colours = std::vector<Colour>({WHITE, BLACK});
+}
+
+RingPattern::RingPattern(std::initializer_list<Colour> colours){
+    this->colours = std::vector<Colour>(colours);
+
+    if(colours.size() == 0){
+        this->colours = std::vector<Colour>({WHITE, BLACK});
+    }
+}
+
+Colour RingPattern::ChildApplyPattern(Point p){
+    return colours.at((int)floor(sqrt(pow(p.x, 2) + pow(p.z, 2))) % colours.size());
+}
+
+CheckerPattern::CheckerPattern(){
+    colours = std::vector<Colour>({WHITE, BLACK});
+}
+
+CheckerPattern::CheckerPattern(std::initializer_list<Colour> colours){
+    this->colours = std::vector<Colour>(colours);
+
+    if(colours.size() == 0){
+        this->colours = std::vector<Colour>({WHITE, BLACK});
+    }
+}
+
+Colour CheckerPattern::ChildApplyPattern(Point p){
+    return colours.at((int)floor(floor(p.x) + floor(p.y) + floor(p.z)) % colours.size());
 }
