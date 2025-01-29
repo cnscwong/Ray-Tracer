@@ -43,6 +43,7 @@ TEST(MaterialTest, BasicTest){
     EXPECT_TRUE(floatIsEqual(m.getDiffuse(), 0.9));
     EXPECT_TRUE(floatIsEqual(m.getSpecular(), 0.9));
     EXPECT_TRUE(floatIsEqual(m.getShininess(), 200));
+    EXPECT_TRUE(floatIsEqual(m.getReflective(), 0));
 
     Sphere s;
     m = s.getMaterial();
@@ -200,7 +201,7 @@ TEST(LightDataTest, PrepareLightDataTest){
 
 // Test for the overPoint variable in the LightData 
 // Checks that it is a little bit above the object
-TEST(WorldTest, OverpointTest){
+TEST(LightDataTest, OverpointTest){
     Ray r(Point(0, 0, -5), Vector(0, 0, 1));
     Sphere* s = new Sphere;
     s->setTransform(translationMatrix(0, 0, 1));
@@ -209,4 +210,12 @@ TEST(WorldTest, OverpointTest){
     EXPECT_TRUE(data.overPoint.z < -EPSILON/2);
     EXPECT_TRUE(data.point.z > data.overPoint.z);
     delete s;
+}
+
+TEST(LightDataTest, ReflectVectorTest){
+    Plane* p = new Plane;
+    Ray r(Point(0, 1, -1), Vector(0, -sqrt(2)/2, sqrt(2)/2));
+    Intersection i(sqrt(2), p);
+    LightData data = prepareLightData(i, r);
+    EXPECT_TRUE(data.reflect.isEqual(Vector(0, sqrt(2)/2, sqrt(2)/2)));
 }

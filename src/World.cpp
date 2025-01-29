@@ -51,12 +51,14 @@ std::vector<Intersection> World::RayIntersection(Ray r){
 }
 
 // Returns the computed colour of a hit using the world light source and the LightData data structure
-Colour World::shadeHit(LightData data){
-    return computeLighting(data.object->getMaterial(), data.object, light, data.overPoint, data.camera, data.normal, hasShadow(data.overPoint));
+Colour World::shadeHit(LightData data, int remaining){
+    Colour surfaceCol = computeLighting(data.object->getMaterial(), data.object, light, data.overPoint, data.camera, data.normal, hasShadow(data.overPoint));
+    Colour reflectedCol = reflectedColour(data, remaining);
+    return surfaceCol + reflectedCol;
 }
 
 // Computes the colour at the first point hit by the ray r
-Colour World::colourAtHit(Ray r){
+Colour World::colourAtHit(Ray r, int remaining){
     // Find intersections of ray at hit
     std::vector<Intersection> intersects = this->RayIntersection(r);
 
@@ -78,7 +80,7 @@ Colour World::colourAtHit(Ray r){
 
     // Uses object that is hit first
     LightData data = prepareLightData(intersects.at(ind), r);
-    return this->shadeHit(data);
+    return this->shadeHit(data, remaining);
 }
 
 // Checks if a point has an object covering the light source
@@ -100,6 +102,18 @@ bool World::hasShadow(Point p){
     }else{
         return false;
     }
+}
+
+// Computes colour of a reflective surface in the world when it is hit by a ray
+Colour World::reflectedColour(LightData data, int remaining){
+    if(data.object->getMaterial().getReflective() == 0 || remaining <= 0){
+        return BLACK;
+    }
+
+    Ray reflectRay(data.overPoint, data.reflect);
+    Colour c = colourAtHit(reflectRay, remaining - 1);
+
+    return c*data.object->getMaterial().getReflective();
 }
 
 // Creates a default world with a light source and two spheres

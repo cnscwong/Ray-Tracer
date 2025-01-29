@@ -4,4 +4,6 @@
 // Setting to enable/disable shadows
 const bool RENDER_SHADOWS = true;
 
-// TODO: PATTERNS
+// TODO: PATTERNS, REFLECTION, TRANSPARENCY, REFRACTION
+
+const int RECURSIVE_REFLECT_LIMIT = 4;

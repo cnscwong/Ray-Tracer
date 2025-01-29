@@ -169,3 +169,86 @@ TEST(WorldTest, ShadowTest){
     delete s1;
     delete s2;
 }
+
+TEST(WorldTest, reflectedColourTestNonreflectiveSurface){
+    World w = defaultWorld();
+    Ray r(Point(), Vector(0, 0, 1));
+    std::vector<Shape*> objects = w.getObjects();
+    Material m = objects.at(1)->getMaterial();
+    m.setAmbient(1);
+    objects.at(1)->setMaterial(m);
+    Intersection i(1, objects.at(1));
+    LightData data = prepareLightData(i, r);
+    Colour c = w.reflectedColour(data);
+    EXPECT_TRUE(c.isEqual(BLACK));
+}
+
+TEST(WorldTest, reflectedColourTestReflectiveSurface){
+    World w = defaultWorld();
+    Plane* p = new Plane;
+    Material m;
+    m.setReflective(0.5);
+    p->setMaterial(m);
+    p->setTransform(translationMatrix(0, -1, 0));
+    w.appendObject(p);
+
+    Ray r(Point(0, 0, -3), Vector(0, -sqrt(2)/2, sqrt(2)/2));
+    Intersection i(sqrt(2), p);
+    LightData data = prepareLightData(i, r);
+    Colour c = w.reflectedColour(data);
+    
+    EXPECT_TRUE(c.isEqual(Colour(0.19032, 0.2379, 0.14274)));
+}
+
+TEST(WorldTest, reflectedColourInShadeHit){
+    World w = defaultWorld();
+    Plane* p = new Plane;
+    Material m;
+    m.setReflective(0.5);
+    p->setMaterial(m);
+    p->setTransform(translationMatrix(0, -1, 0));
+    w.appendObject(p);
+
+    Ray r(Point(0, 0, -3), Vector(0, -sqrt(2)/2, sqrt(2)/2));
+    Intersection i(sqrt(2), p);
+
+    LightData data = prepareLightData(i, r);
+    Colour c = w.shadeHit(data);
+    EXPECT_TRUE(c.isEqual(Colour(0.87677, 0.92436, 0.82918)));
+}
+
+TEST(WorldTest, ColourAtAvoidsInfiniteRecursion){
+    World w;
+    w.setLight(LightSource(Point(), WHITE));
+    Plane* l = new Plane;
+    Plane* u = new Plane;
+    Material m;
+    m.setReflective(1);
+    l->setMaterial(m);
+    u->setMaterial(m);
+    l->setTransform(translationMatrix(0, -1, 0));
+    u->setTransform(translationMatrix(0, 1, 0));
+    w.appendObject(l);
+    w.appendObject(u);
+
+    Ray r(Point(), Vector(0, 1, 0));
+    w.colourAtHit(r);
+}
+
+TEST(WorldTest, ReflectedColourReflectsBlackAtRecursiveLimit){
+    World w = defaultWorld();
+    Plane* p = new Plane;
+    Material m;
+    m.setReflective(0.5);
+    p->setMaterial(m);
+    p->setTransform(translationMatrix(0, -1, 0));
+    w.appendObject(p);
+
+
+    Ray r(Point(0, 0, -3), Vector(0, -sqrt(2)/2, sqrt(2)/2));
+    Intersection i(sqrt(2), p);
+    LightData data = prepareLightData(i, r);
+    Colour c = w.reflectedColour(data, 0);
+
+    EXPECT_TRUE(c.isEqual(BLACK));
+}

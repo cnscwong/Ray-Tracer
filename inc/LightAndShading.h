@@ -45,7 +45,13 @@ class Material{
 private:
     Colour c;
     Pattern* pattern = nullptr;
-    float ambient, diffuse, specular, shininess;
+    float ambient;
+    float diffuse;
+    float specular;
+    float shininess;
+    float reflective;
+    float transparency;
+    float refractive_index;
 public:
     // Material constructor
     Material();
@@ -57,6 +63,7 @@ public:
     float getDiffuse();
     float getSpecular();
     float getShininess();
+    float getReflective();
 
     void setColour(Colour col);
     void setPattern(Pattern* p);
@@ -64,6 +71,7 @@ public:
     void setDiffuse(float d);
     void setSpecular(float s);
     void setShininess(float s);
+    void setReflective(float r);
 
     // Equality function
     bool isEqual(Material m);

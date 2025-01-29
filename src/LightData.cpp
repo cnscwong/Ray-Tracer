@@ -7,6 +7,7 @@ LightData::LightData(){
     point = Point();
     camera = Vector();
     normal = Vector();
+    reflect = Vector();
     insideObject = false;
     overPoint = point + normal*EPSILON;
 }
@@ -37,6 +38,7 @@ LightData prepareLightData(Intersection i, Ray r){
         data.normal = Vector(data.normal.negateTuple());
     }
 
+    data.reflect = reflectVector(r.getDirection(), data.normal);
     data.overPoint = data.point + data.normal*EPSILON;
     return data;
 }

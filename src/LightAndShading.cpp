@@ -39,6 +39,7 @@ Material::Material(){
     diffuse = 0.9;
     specular = 0.9;
     shininess = 200;
+    reflective = 0;
 }
 
 // Material getters
@@ -66,13 +67,17 @@ float Material::getShininess(){
     return shininess;
 }
 
+float Material::getReflective(){
+    return reflective;
+}
+
 // Material setters
 void Material::setColour(Colour col){
-    this->c = col;
+    c = col;
 }
 
 void Material::setPattern(Pattern* p){
-    this->pattern = p;
+    pattern = p;
 }
 
 void Material::setAmbient(float a){
@@ -105,6 +110,10 @@ void Material::setShininess(float s){
     }
 
     shininess = s;
+}
+
+void Material::setReflective(float r){
+    reflective = r;
 }
 
 // Material equality checker
