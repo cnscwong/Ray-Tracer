@@ -59,6 +59,8 @@ class Sphere: public Shape{
         Vector childNormal(Point p);
 };
 
+Sphere* glassSphere();
+
 // class to store the plane shape, a flat surface that extends infinitely in two directions and has no thickness
 class Plane : public Shape{
 public:

@@ -21,29 +21,29 @@ int main(){
 
     Plane* floor = new Plane;
     Material m;
-    m.setColour(Colour(1, 0.9, 0.9));
-    m.setPattern(p1);
+    m.colour = Colour(1, 0.9, 0.9);
+    m.pattern = p1;
     floor->setMaterial(m);
 
     Sphere* middle = new Sphere;
     middle->setTransform(translationMatrix(-0.5, 1, 0.5));
     m = Material();
-    m.setColour(Colour(0.1, 1, 0.5));
-    m.setDiffuse(0.7);
-    m.setSpecular(0.3);
-    m.setPattern(p2);
+    m.colour = Colour(0.1, 1, 0.5);
+    m.diffuse = 0.7;
+    m.specular = 0.3;
+    m.pattern = p2;
     middle->setMaterial(m);
 
     Sphere* right = new Sphere;
     right->setTransform(translationMatrix(1.5, 0.5, -0.5)*scalingMatrix(0.5, 0.5, 0.5));
-    m.setColour(Colour(0.5, 1, 0.1));
-    m.setPattern(p3);
+    m.colour = Colour(0.5, 1, 0.1);
+    m.pattern = p3;
     right->setMaterial(m);
 
     Sphere* left = new Sphere;
     left->setTransform(translationMatrix(-1.5, 0.33, -0.75)*scalingMatrix(0.33, 0.33, 0.33));
-    m.setColour(Colour(1, 0.8, 0.1));
-    m.setPattern(p4);
+    m.colour = Colour(1, 0.8, 0.1);
+    m.pattern = p4;
     left->setMaterial(m);
 
     World w;

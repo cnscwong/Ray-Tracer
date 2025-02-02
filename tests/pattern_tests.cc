@@ -122,10 +122,10 @@ TEST(FunctionTest, ComputeLighting_AppliesStripePattern){
     Stripes* stripes = new Stripes;
     Sphere* s = new Sphere;
     Material m;
-    m.setPattern(stripes);
-    m.setAmbient(1);
-    m.setDiffuse(0);
-    m.setSpecular(0);
+    m.pattern = stripes;
+    m.ambient = 1;
+    m.diffuse = 0;
+    m.specular = 0;
 
     Vector camera(0, 0, -1);
     Vector normal(0, 0, -1);

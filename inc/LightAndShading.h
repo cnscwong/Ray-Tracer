@@ -43,35 +43,20 @@ public:
 // from. Shininess controls the brightness of the specular reflection
 class Material{
 private:
-    Colour c;
-    Pattern* pattern = nullptr;
+public:
+    Colour colour;
+    Pattern* pattern;
     float ambient;
     float diffuse;
     float specular;
     float shininess;
     float reflective;
     float transparency;
-    float refractive_index;
-public:
+    float refractiveIndex;
+    bool castsShadow;
+
     // Material constructor
     Material();
-
-    // Variable getters and setters
-    Colour getColour();
-    Pattern* getPattern();
-    float getAmbient();
-    float getDiffuse();
-    float getSpecular();
-    float getShininess();
-    float getReflective();
-
-    void setColour(Colour col);
-    void setPattern(Pattern* p);
-    void setAmbient(float a);
-    void setDiffuse(float d);
-    void setSpecular(float s);
-    void setShininess(float s);
-    void setReflective(float r);
 
     // Equality function
     bool isEqual(Material m);

@@ -52,9 +52,18 @@ std::vector<Intersection> World::RayIntersection(Ray r){
 
 // Returns the computed colour of a hit using the world light source and the LightData data structure
 Colour World::shadeHit(LightData data, int remaining){
-    Colour surfaceCol = computeLighting(data.object->getMaterial(), data.object, light, data.overPoint, data.camera, data.normal, hasShadow(data.overPoint));
+    bool shadowed = hasShadow(data.overPoint);
+    Colour surfaceCol = computeLighting(data.object->getMaterial(), data.object, light, data.overPoint, data.camera, data.normal, shadowed);
     Colour reflectedCol = reflectedColour(data, remaining);
-    return surfaceCol + reflectedCol;
+    Colour refractedCol = refractedColour(data, remaining);
+
+    Material m = data.object->getMaterial();
+    if(m.reflective > 0 && m.transparency > 0){
+        float reflectance = schlickApproximation(data);
+        return surfaceCol + reflectedCol*reflectance + refractedCol*(1 - reflectance);
+    }
+
+    return surfaceCol + reflectedCol + refractedCol;
 }
 
 // Computes the colour at the first point hit by the ray r
@@ -79,7 +88,7 @@ Colour World::colourAtHit(Ray r, int remaining){
     }
 
     // Uses object that is hit first
-    LightData data = prepareLightData(intersects.at(ind), r);
+    LightData data = prepareLightData(intersects.at(ind), r, intersects);
     return this->shadeHit(data, remaining);
 }
 
@@ -106,14 +115,46 @@ bool World::hasShadow(Point p){
 
 // Computes colour of a reflective surface in the world when it is hit by a ray
 Colour World::reflectedColour(LightData data, int remaining){
-    if(data.object->getMaterial().getReflective() == 0 || remaining <= 0){
+    if(data.object->getMaterial().reflective == 0 || remaining <= 0){
         return BLACK;
     }
 
     Ray reflectRay(data.overPoint, data.reflect);
     Colour c = colourAtHit(reflectRay, remaining - 1);
 
-    return c*data.object->getMaterial().getReflective();
+    return c*data.object->getMaterial().reflective;
+}
+
+// Computes colour of a surface when hit by a ray based on the material's transparency and refractive properties
+Colour World::refractedColour(LightData data, int remaining){
+    if(data.object->getMaterial().transparency == 0 || remaining == 0){
+        return BLACK;
+    }
+
+    // Check for total internal reflection using Snell's law. When a refracted ray reflects back into the material 
+    // it was previously in due to the refractive indices of the materials and the angle the ray hits the other material
+    // Ratio of n1 and n2
+    double n_ratio = data.n1/data.n2;
+    // Finds cos(theta_i) using the dot product of the two vectors
+    double cos_i = dotProduct(data.camera, data.normal);
+    // Finds sin(theta_t)^2 using trig identity
+    double sin2_t = pow(n_ratio, 2)*(1.0-pow(cos_i, 2));
+    // total internal reflection occurs
+    if(sin2_t > 1){
+        return BLACK;
+    }
+
+    // Compute refracted colour if no edge cases
+    // Finds cos(theta_t) using trig identity
+    double cos_t = sqrt(1.0 - sin2_t);
+    // Compute direction of refracted ray
+    Vector direction = data.normal*(n_ratio*cos_i - cos_t) - data.camera*n_ratio;
+    Ray refractedRay(data.underPoint, direction);
+    // Finds colour of refracted ray
+    Colour c = colourAtHit(refractedRay, remaining - 1)*data.object->getMaterial().transparency;
+
+    // Multiplies by transparency value to account for any opacity
+    return c;
 }
 
 // Creates a default world with a light source and two spheres
@@ -122,9 +163,9 @@ World defaultWorld(){
 
     Shape* s1 = new Sphere;
     Material m;
-    m.setColour(Colour(0.8, 1.0, 0.6));
-    m.setDiffuse(0.7);
-    m.setSpecular(0.2);
+    m.colour = Colour(0.8, 1.0, 0.6);
+    m.diffuse = 0.7;
+    m.specular = 0.2;
     s1->setMaterial(m);
 
     Shape* s2 = new Sphere;

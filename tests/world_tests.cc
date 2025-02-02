@@ -14,9 +14,9 @@ TEST(WorldTest, BasicTest){
 
     Sphere* s1 = new Sphere;
     Material m;
-    m.setColour(Colour(0.8, 1.0, 0.6));
-    m.setDiffuse(0.7);
-    m.setSpecular(0.2);
+    m.colour = Colour(0.8, 1.0, 0.6);
+    m.diffuse = 0.7;
+    m.specular = 0.2;
     s1->setMaterial(m);
 
     Sphere* s2 = new Sphere;
@@ -81,7 +81,7 @@ TEST(WorldTest, ColourAtHitTest){
     // w.setObjects(objs);
     // r = Ray(Point(0, 0, 0.75), Vector(0, 0, -1));
     // c = w.colourAtHit(r);
-    // EXPECT_TRUE(c.isEqual(w.getObjects().at(1)->getMaterial().getColour()));
+    // EXPECT_TRUE(c.isEqual(w.getObjects().at(1)->getMaterial().colour));
 }
 
 TEST(WorldTest, ViewTransformationTest){
@@ -175,7 +175,7 @@ TEST(WorldTest, reflectedColourTestNonreflectiveSurface){
     Ray r(Point(), Vector(0, 0, 1));
     std::vector<Shape*> objects = w.getObjects();
     Material m = objects.at(1)->getMaterial();
-    m.setAmbient(1);
+    m.ambient = 1;
     objects.at(1)->setMaterial(m);
     Intersection i(1, objects.at(1));
     LightData data = prepareLightData(i, r);
@@ -187,7 +187,7 @@ TEST(WorldTest, reflectedColourTestReflectiveSurface){
     World w = defaultWorld();
     Plane* p = new Plane;
     Material m;
-    m.setReflective(0.5);
+    m.reflective = 0.5;
     p->setMaterial(m);
     p->setTransform(translationMatrix(0, -1, 0));
     w.appendObject(p);
@@ -204,7 +204,7 @@ TEST(WorldTest, reflectedColourInShadeHit){
     World w = defaultWorld();
     Plane* p = new Plane;
     Material m;
-    m.setReflective(0.5);
+    m.reflective = 0.5;
     p->setMaterial(m);
     p->setTransform(translationMatrix(0, -1, 0));
     w.appendObject(p);
@@ -223,7 +223,7 @@ TEST(WorldTest, ColourAtAvoidsInfiniteRecursion){
     Plane* l = new Plane;
     Plane* u = new Plane;
     Material m;
-    m.setReflective(1);
+    m.reflective = 1;
     l->setMaterial(m);
     u->setMaterial(m);
     l->setTransform(translationMatrix(0, -1, 0));
@@ -239,11 +239,10 @@ TEST(WorldTest, ReflectedColourReflectsBlackAtRecursiveLimit){
     World w = defaultWorld();
     Plane* p = new Plane;
     Material m;
-    m.setReflective(0.5);
+    m.reflective = 0.5;
     p->setMaterial(m);
     p->setTransform(translationMatrix(0, -1, 0));
     w.appendObject(p);
-
 
     Ray r(Point(0, 0, -3), Vector(0, -sqrt(2)/2, sqrt(2)/2));
     Intersection i(sqrt(2), p);
@@ -251,4 +250,124 @@ TEST(WorldTest, ReflectedColourReflectsBlackAtRecursiveLimit){
     Colour c = w.reflectedColour(data, 0);
 
     EXPECT_TRUE(c.isEqual(BLACK));
+}
+
+TEST(WorldTest, RefractedColourIsBlackOnOpaqueSurace){
+    World w = defaultWorld();
+    Shape* shape = w.getObjects().at(0);
+    Ray r(Point(0, 0, -5), Vector(0, 0, 1));
+    std::vector<Intersection> intersects({Intersection(4, shape), Intersection(6, shape)});
+    LightData data = prepareLightData(intersects.at(0), r, intersects);
+    Colour c = w.refractedColour(data);
+
+    EXPECT_TRUE(c.isEqual(BLACK));
+}
+
+TEST(WorldTest, RefractedColourIsBlackAtRecursiveLimit){
+    World w = defaultWorld();
+    Shape* shape = w.getObjects().at(0);
+    Material m;
+    m.transparency = 1;
+    shape->setMaterial(m);
+    Ray r(Point(0, 0, -5), Vector(0, 0, 1));
+    std::vector<Intersection> intersects({Intersection(4, shape), Intersection(6, shape)});
+    LightData data = prepareLightData(intersects.at(0), r, intersects);
+    Colour c = w.refractedColour(data, 0);
+
+    EXPECT_TRUE(c.isEqual(BLACK));
+}
+
+TEST(WorldTest, TotalInternalReflectionOccurs_RefractedColourReturnsBlack){
+    World w = defaultWorld();
+    Shape* shape = w.getObjects().at(0);
+    Material m;
+    m.transparency = 1;
+    m.refractiveIndex = 1.5;
+    shape->setMaterial(m);
+    Ray r(Point(0, 0, sqrt(2)/2), Vector(0, 1, 0));
+    std::vector<Intersection> intersects({Intersection(-sqrt(2)/2, shape), Intersection(sqrt(2)/2, shape)});
+    LightData data = prepareLightData(intersects.at(1), r, intersects);
+    Colour c = w.refractedColour(data);
+
+    EXPECT_TRUE(c.isEqual(BLACK));
+}
+
+TEST(WorldTest, RefractedColourCorrectForRefractedRay){
+    World w = defaultWorld();
+
+    Pattern* p = new Pattern;
+    Material m;
+    m.ambient = 1.0;
+    m.pattern = p;
+    Shape* A = w.getObjects().at(0);
+    A->setMaterial(m);
+
+    m = Material();
+    m.transparency = 1.0;
+    m.refractiveIndex = 1.5;
+    Shape* B = w.getObjects().at(1);
+    B->setMaterial(m);
+
+    Ray r(Point(0, 0, 0.1), Vector(0, 1, 0));
+    std::vector<Intersection> intersects({Intersection(-0.9899, A), Intersection(-0.4899, B), Intersection(0.4899, B), Intersection(0.9899, A)});
+    LightData data = prepareLightData(intersects.at(2), r, intersects);
+    Colour c = w.refractedColour(data);
+
+    // Using the default pattern, we can check what point the refracted ray hit here
+    EXPECT_TRUE(c.isEqual(Colour(0, 0.99888, 0.04725)));
+}
+
+TEST(WorldTest, ShadeHitHandlesRefraction){
+    World w = defaultWorld();
+
+    Material m;
+    m.transparency = 0.5;
+    m.refractiveIndex = 1.5;
+    Plane* floor = new Plane;
+    floor->setTransform(translationMatrix(0, -1, 0));
+    floor->setMaterial(m);
+
+    m = Material();
+    m.colour = Colour(1, 0, 0);
+    m.ambient = 0.5;
+    Sphere* s = new Sphere;
+    s->setTransform(translationMatrix(0, -3.5, -0.5));
+    s->setMaterial(m);
+
+    w.appendObject(floor);
+    w.appendObject(s);
+    Ray r(Point(0, 0, -3), Vector(0, -sqrt(2)/2, sqrt(2)/2));
+    std::vector<Intersection> intersects({Intersection(sqrt(2), floor)});
+    LightData data = prepareLightData(intersects.at(0), r, intersects);
+
+    Colour c = w.shadeHit(data, 5);
+    EXPECT_TRUE(c.isEqual(Colour(0.93642, 0.68642, 0.68642)));
+}
+
+TEST(WorldTest, ShadeHitUsesReflectanceWhenCombiningReflectionAndRefraction){
+    World w = defaultWorld();
+
+    Material m;
+    m.reflective = 0.5;
+    m.transparency = 0.5;
+    m.refractiveIndex = 1.5;
+    Plane* floor = new Plane;
+    floor->setTransform(translationMatrix(0, -1, 0));
+    floor->setMaterial(m);
+
+    m = Material();
+    m.colour = Colour(1, 0, 0);
+    m.ambient = 0.5;
+    Sphere* s = new Sphere;
+    s->setTransform(translationMatrix(0, -3.5, -0.5));
+    s->setMaterial(m);
+
+    w.appendObject(floor);
+    w.appendObject(s);
+    Ray r(Point(0, 0, -3), Vector(0, -sqrt(2)/2, sqrt(2)/2));
+    std::vector<Intersection> intersects({Intersection(sqrt(2), floor)});
+    LightData data = prepareLightData(intersects.at(0), r, intersects);
+
+    Colour c = w.shadeHit(data, 5);
+    EXPECT_TRUE(c.isEqual(Colour(0.93391, 0.69643, 0.69243)));
 }

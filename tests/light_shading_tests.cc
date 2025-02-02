@@ -38,19 +38,21 @@ TEST(LightSourceTest, BasicTest){
 
 TEST(MaterialTest, BasicTest){
     Material m;
-    EXPECT_TRUE(m.getColour().isEqual(Colour(1, 1, 1)));
-    EXPECT_TRUE(floatIsEqual(m.getAmbient(), 0.1));
-    EXPECT_TRUE(floatIsEqual(m.getDiffuse(), 0.9));
-    EXPECT_TRUE(floatIsEqual(m.getSpecular(), 0.9));
-    EXPECT_TRUE(floatIsEqual(m.getShininess(), 200));
-    EXPECT_TRUE(floatIsEqual(m.getReflective(), 0));
+    EXPECT_TRUE(m.colour.isEqual(Colour(1, 1, 1)));
+    EXPECT_TRUE(floatIsEqual(m.ambient, 0.1));
+    EXPECT_TRUE(floatIsEqual(m.diffuse, 0.9));
+    EXPECT_TRUE(floatIsEqual(m.specular, 0.9));
+    EXPECT_TRUE(floatIsEqual(m.shininess, 200));
+    EXPECT_TRUE(floatIsEqual(m.reflective, 0));
+    EXPECT_TRUE(floatIsEqual(m.transparency, 0));
+    EXPECT_TRUE(floatIsEqual(m.refractiveIndex, 1));
 
     Sphere s;
     m = s.getMaterial();
     EXPECT_TRUE(m.isEqual(Material()));
 
-    m.setAmbient(1);
-    EXPECT_TRUE(floatIsEqual(m.getAmbient(), 1));
+    m.ambient = 1;
+    EXPECT_TRUE(floatIsEqual(m.ambient, 1));
     s.setMaterial(m);
     EXPECT_TRUE(s.getMaterial().isEqual(m));
 }
@@ -200,7 +202,7 @@ TEST(LightDataTest, PrepareLightDataTest){
 }
 
 // Test for the overPoint variable in the LightData 
-// Checks that it is a little bit above the object
+// Checks that it is a little bit above the object surface
 TEST(LightDataTest, OverpointTest){
     Ray r(Point(0, 0, -5), Vector(0, 0, 1));
     Sphere* s = new Sphere;
@@ -218,4 +220,119 @@ TEST(LightDataTest, ReflectVectorTest){
     Intersection i(sqrt(2), p);
     LightData data = prepareLightData(i, r);
     EXPECT_TRUE(data.reflect.isEqual(Vector(0, sqrt(2)/2, sqrt(2)/2)));
+}
+
+TEST(FindRefractiveIndicesTest, RayPassesFromNothingToObject){
+    Material m;
+    m.refractiveIndex = 1.5;
+    Sphere* A = glassSphere();
+    A->setMaterial(m);
+    m.refractiveIndex = 2;
+    Sphere* B = glassSphere();
+    B->setMaterial(m);
+    m.refractiveIndex = 2.5;
+    Sphere* C = glassSphere();
+    C->setMaterial(m);
+    std::vector<Intersection> RayIntersects({Intersection(2, A), Intersection(2.75, B), Intersection(3.25, C), Intersection(4.75, B), Intersection(5.25, C), Intersection(6, A)});
+    LightData data;
+
+    findRefractiveIndices(data, RayIntersects.at(0), RayIntersects);
+
+    EXPECT_EQ(data.n1, 1.0);
+    EXPECT_EQ(data.n2, 1.5);
+}
+
+TEST(FindRefractiveIndicesTest, RayPassesFromObjectToObject){
+    Material m;
+    m.refractiveIndex = 1.5;
+    Sphere* A = glassSphere();
+    A->setMaterial(m);
+    m.refractiveIndex = 2;
+    Sphere* B = glassSphere();
+    B->setMaterial(m);
+    m.refractiveIndex = 2.5;
+    Sphere* C = glassSphere();
+    C->setMaterial(m);
+    std::vector<Intersection> RayIntersects({Intersection(2, A), Intersection(2.75, B), Intersection(3.25, C), Intersection(4.75, B), Intersection(5.25, C), Intersection(6, A)});
+    LightData data1;
+    LightData data2;
+    LightData data3;
+    LightData data4;
+
+    findRefractiveIndices(data1, RayIntersects.at(1), RayIntersects);
+    findRefractiveIndices(data2, RayIntersects.at(2), RayIntersects);
+    findRefractiveIndices(data3, RayIntersects.at(3), RayIntersects);
+    findRefractiveIndices(data4, RayIntersects.at(4), RayIntersects);
+
+    EXPECT_EQ(data1.n1, 1.5);
+    EXPECT_EQ(data1.n2, 2.0);
+    EXPECT_EQ(data2.n1, 2.0);
+    EXPECT_EQ(data2.n2, 2.5);
+    EXPECT_EQ(data3.n1, 2.5);
+    EXPECT_EQ(data3.n2, 2.5);
+    EXPECT_EQ(data4.n1, 2.5);
+    EXPECT_EQ(data4.n2, 1.5);
+}
+
+TEST(FindRefractiveIndicesTest, RayPassesFromObjectToNothing){
+    Material m;
+    m.refractiveIndex = 1.5;
+    Sphere* A = glassSphere();
+    A->setMaterial(m);
+    m.refractiveIndex = 2;
+    Sphere* B = glassSphere();
+    B->setMaterial(m);
+    m.refractiveIndex = 2.5;
+    Sphere* C = glassSphere();
+    C->setMaterial(m);
+    std::vector<Intersection> RayIntersects({Intersection(2, A), Intersection(2.75, B), Intersection(3.25, C), Intersection(4.75, B), Intersection(5.25, C), Intersection(6, A)});
+    LightData data;
+
+    findRefractiveIndices(data, RayIntersects.at(5), RayIntersects);
+
+    EXPECT_EQ(data.n1, 1.5);
+    EXPECT_EQ(data.n2, 1.0);
+}
+
+// Test for the underPoint variable in the LightData 
+// Checks that it is a little bit below the object surface
+TEST(LightDataTest, UnderpointTest){
+    Ray r(Point(0, 0, -5), Vector(0, 0, 1));
+    Sphere* s = glassSphere();
+    s->setTransform(translationMatrix(0, 0, 1));
+    Intersection i(5, s);
+    LightData data = prepareLightData(i, r);
+    EXPECT_TRUE(data.underPoint.z > -EPSILON/2);
+    EXPECT_TRUE(data.point.z < data.underPoint.z);
+    delete s;
+}
+
+TEST(LightDataTest, SchlickApproximationReturnsOneWhenTotalInternalReflectionOccurs){
+    Sphere* s = glassSphere();
+    Ray r(Point(0, 0, sqrt(2)/2), Vector(0, 1, 0));
+    std::vector<Intersection> intersects({Intersection(-sqrt(2)/2, s), Intersection(sqrt(2)/2, s)});
+    LightData data = prepareLightData(intersects.at(1), r, intersects);
+    float reflectance = schlickApproximation(data);
+
+    EXPECT_EQ(reflectance, 1.0);
+}
+
+TEST(LightDataTest, SchlickApproximationIsSmallWhenRayPerpendicularToSurface){
+    Sphere* s = glassSphere();
+    Ray r(Point(0, 0, 0), Vector(0, 1, 0));
+    std::vector<Intersection> intersects({Intersection(-1, s), Intersection(1, s)});
+    LightData data = prepareLightData(intersects.at(1), r, intersects);
+    float reflectance = schlickApproximation(data);
+
+    EXPECT_TRUE(floatIsEqual(reflectance, 0.04));
+}
+
+TEST(LightDataTest, SchlickApproximationWhenRayHitsSurfaceAtASmallAngle){
+    Sphere* s = glassSphere();
+    Ray r(Point(0, 0.99, -2), Vector(0, 0, 1));
+    std::vector<Intersection> intersects({Intersection(1.8589, s)});
+    LightData data = prepareLightData(intersects.at(0), r, intersects);
+    float reflectance = schlickApproximation(data);
+
+    EXPECT_TRUE(floatIsEqual(reflectance, 0.48873));
 }

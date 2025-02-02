@@ -16,6 +16,10 @@ Shape* Intersection::getShape(){
     return s;
 }
 
+bool Intersection::isEqual(Intersection i){
+    return floatIsEqual(time, i.getTime()) && s == i.getShape();
+}
+
 // Aggregating intersections into a vector
 std::vector<Intersection> intersections(std::initializer_list<Intersection> l){
     return std::vector<Intersection>(l);

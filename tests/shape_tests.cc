@@ -13,7 +13,7 @@ TEST(ShapeTest, BasicTest){
     s.setTransform(translationMatrix(2, 3, 4));
     EXPECT_TRUE(s.getTransform().isEqual(translationMatrix(2, 3, 4)));
     Material m;
-    m.setAmbient(1);
+    m.ambient = 1;
     s.setMaterial(m);
     EXPECT_TRUE(s.getMaterial().isEqual(m));
 }
@@ -56,4 +56,11 @@ TEST(PlaneChildIntersectionsTest, RayIntersectsPlaneFromBothSides){
     EXPECT_EQ(intersects.size(), 1);
     EXPECT_EQ(intersects.at(0).getTime(), 1);
     EXPECT_TRUE(intersects.at(0).getShape()->isEqual(p));
+}
+
+TEST(GlassSphereTest, SphereIsTransparentAndRefractive){
+    Sphere* s = glassSphere();
+    EXPECT_TRUE(s->getTransform().isEqual(Matrix(4)));
+    EXPECT_EQ(s->getMaterial().transparency, 1);
+    EXPECT_EQ(s->getMaterial().refractiveIndex, 1.5);
 }

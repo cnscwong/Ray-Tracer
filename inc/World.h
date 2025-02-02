@@ -38,6 +38,8 @@ public:
     bool hasShadow(Point p);
     // Computes the reflected colour using LightData and the material's reflective attribute
     Colour reflectedColour(LightData data, int remaining = RECURSIVE_REFLECT_LIMIT);
+    // Computes the reflected colour using LightData and the material's refractive index and transparency attribute
+    Colour refractedColour(LightData data, int remaining = RECURSIVE_REFLECT_LIMIT);
 };
 
 // Returns a default world with a light source and two spheres

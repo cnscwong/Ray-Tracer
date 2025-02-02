@@ -34,107 +34,45 @@ bool LightSource::isEqual(LightSource l){
 
 // Material constructors
 Material::Material(){
-    c = Colour(1, 1, 1);
+    colour = Colour(1, 1, 1);
+    pattern = nullptr;
     ambient = 0.1;
     diffuse = 0.9;
     specular = 0.9;
     shininess = 200;
     reflective = 0;
-}
-
-// Material getters
-Colour Material::getColour(){
-    return c;
-}
-
-Pattern* Material::getPattern(){
-    return pattern;
-}
-
-float Material::getAmbient(){
-    return ambient;
-}
-
-float Material::getDiffuse(){
-    return diffuse;
-}
-
-float Material::getSpecular(){
-    return specular;
-}
-
-float Material::getShininess(){
-    return shininess;
-}
-
-float Material::getReflective(){
-    return reflective;
-}
-
-// Material setters
-void Material::setColour(Colour col){
-    c = col;
-}
-
-void Material::setPattern(Pattern* p){
-    pattern = p;
-}
-
-void Material::setAmbient(float a){
-    if(a < 0){
-        throw std::invalid_argument("Material variable should be nonnegative");
-    }
-
-    ambient = a;
-}
-
-void Material::setDiffuse(float d){
-    if(d < 0){
-        throw std::invalid_argument("Material variable should be nonnegative");
-    }
-
-    diffuse = d;
-}
-
-void Material::setSpecular(float s){
-    if(s < 0){
-        throw std::invalid_argument("Material variable should be nonnegative");
-    }
-
-    specular = s;
-}
-
-void Material::setShininess(float s){
-    if(s < 0){
-        throw std::invalid_argument("Material variable should be nonnegative");
-    }
-
-    shininess = s;
-}
-
-void Material::setReflective(float r){
-    reflective = r;
+    transparency = 0;
+    refractiveIndex = 1;
+    castsShadow = true;
 }
 
 // Material equality checker
 bool Material::isEqual(Material m){
-    if(!c.isEqual(m.getColour())){
+    if(!colour.isEqual(m.colour)){
         return false;
     }
-
-    if(!floatIsEqual(ambient, m.getAmbient())){
+    if(!floatIsEqual(ambient, m.ambient)){
         return false;
     }
-
-    if(!floatIsEqual(diffuse, m.getDiffuse())){
+    if(!floatIsEqual(diffuse, m.diffuse)){
         return false;
     }
-
-    if(!floatIsEqual(specular, m.getSpecular())){
+    if(!floatIsEqual(specular, m.specular)){
         return false;
     }
-
-    if(!floatIsEqual(shininess, m.getShininess())){
+    if(!floatIsEqual(shininess, m.shininess)){
+        return false;
+    }
+    if(!floatIsEqual(reflective, m.reflective)){
+        return false;
+    }
+    if(!floatIsEqual(transparency, m.transparency)){
+        return false;
+    }
+    if(!floatIsEqual(refractiveIndex, m.refractiveIndex)){
+        return false;
+    }
+    if(castsShadow != m.castsShadow){
         return false;
     }
 
@@ -144,17 +82,17 @@ bool Material::isEqual(Material m){
 // Calculates the updated colour value of a point based on the ray, light, and object/material attributes
 Colour computeLighting(Material m, Shape* object, LightSource l, Point p, Vector camera, Vector normal, bool inShadow){
     Colour colour;
-    if(m.getPattern() == nullptr){
-        colour = m.getColour();
+    if(m.pattern == nullptr){
+        colour = m.colour;
     }else{
-        colour = m.getPattern()->applyPattern(object, p);
+        colour = m.pattern->applyPattern(object, p);
     }
 
     // Combines the material colour and light colour together
     Colour combinedColour = colour*l.getIntensity();
 
     // Computes ambient contribution
-    Colour ambient = combinedColour*m.getAmbient();
+    Colour ambient = combinedColour*m.ambient;
 
     if(inShadow){
         return ambient;
@@ -175,7 +113,7 @@ Colour computeLighting(Material m, Shape* object, LightSource l, Point p, Vector
         specular = Colour(0, 0, 0);
     }else{
         // Computes diffuse contribution
-        diffuse = combinedColour*m.getDiffuse()*LNdot;
+        diffuse = combinedColour*m.diffuse*LNdot;
 
         // Reflected vector of light that bounces on p
         Vector reflection = reflectVector(Vector(lightVector.negateTuple()), normal);
@@ -188,8 +126,8 @@ Colour computeLighting(Material m, Shape* object, LightSource l, Point p, Vector
             specular = Colour(0, 0, 0);
         }else{
             // Computes specular contribution
-            float sFactor = pow(REdot, m.getShininess());
-            specular = l.getIntensity()*m.getSpecular()*sFactor;
+            float sFactor = pow(REdot, m.shininess);
+            specular = l.getIntensity()*m.specular*sFactor;
         }
     }
 

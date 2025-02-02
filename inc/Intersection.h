@@ -15,6 +15,9 @@ class Intersection{
         // Getters for Intersection variables
         float getTime();
         Shape* getShape();
+
+        // Equality check
+        bool isEqual(Intersection i);
 };
 
 // Function to pack a list of intersections into a vector

@@ -118,6 +118,17 @@ Vector Sphere::childNormal(Point p){
     return sphere_normal;
 }
 
+// Generates a sphere with a glass material
+Sphere* glassSphere(){
+    Material m;
+    m.transparency = 1;
+    m.refractiveIndex = 1.5;
+    Sphere* s = new Sphere;
+    s->setMaterial(m);
+
+    return s;
+}
+
 // Computes the point of intersection of a ray on the plane 
 std::vector<Intersection> Plane::childIntersections(Ray r){
     // Since the default plane is an xz plane before transformation, any vector with a y value of ~0(floating-point error) will be parallel to the plane
