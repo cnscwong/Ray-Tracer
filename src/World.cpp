@@ -52,7 +52,7 @@ std::vector<Intersection> World::RayIntersection(Ray r){
 
 // Returns the computed colour of a hit using the world light source and the LightData data structure
 Colour World::shadeHit(LightData data, int remaining){
-    bool shadowed = hasShadow(data.overPoint);
+    bool shadowed = data.object->getMaterial().castsShadow && hasShadow(data.overPoint);
     Colour surfaceCol = computeLighting(data.object->getMaterial(), data.object, light, data.overPoint, data.camera, data.normal, shadowed);
     Colour reflectedCol = reflectedColour(data, remaining);
     Colour refractedCol = refractedColour(data, remaining);

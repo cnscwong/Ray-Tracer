@@ -11,7 +11,6 @@ protected:
     // Stores material of shape and the matrix transformation that is applied to the shape
     Matrix transform = Matrix(4);
     Material material;
-
 public:
     // Getter and setter for transform and material
     Matrix getTransform();
@@ -71,3 +70,14 @@ public:
     // The default plane is an xz plane, so the normal vector will be Vector(0, 1, 0)
     Vector childNormal(Point p);
 };
+
+// class to represent cubes
+class Cube : public Shape{
+public:
+    // Shape class override functions
+    std::vector<Intersection> childIntersections(Ray r);
+    Vector childNormal(Point p);
+};
+
+// Cube helper function for computing intersections
+std::vector<float> check_axis(float origin, float direction);

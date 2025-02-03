@@ -148,3 +148,63 @@ std::vector<Intersection> Plane::childIntersections(Ray r){
 Vector Plane::childNormal(Point p){
     return Vector(0, 1, 0);
 }
+
+// Computes all times a ray hits the cube
+std::vector<Intersection> Cube::childIntersections(Ray r){
+    // Computes the times when the ray intersected with the corresponding plane of each face of the cube
+    std::vector<float> xt_minmax = check_axis(r.getOrigin().x, r.getDirection().x);
+    std::vector<float> yt_minmax = check_axis(r.getOrigin().y, r.getDirection().y);
+    std::vector<float> zt_minmax = check_axis(r.getOrigin().z, r.getDirection().z);
+
+    // The largest min time and smallest max time will always be the times the ray intersects with the cube
+    float tmin = std::max({xt_minmax.at(0), yt_minmax.at(0), zt_minmax.at(0)});
+    float tmax = std::min({xt_minmax.at(1), yt_minmax.at(1), zt_minmax.at(1)});
+
+    // Ray does not intersect with cube
+    if(tmin > tmax){
+        return std::vector<Intersection>();
+    }
+
+    return std::vector<Intersection>({Intersection(tmin, this), Intersection(tmax, this)});
+}
+
+// Computes the normal vector of a point on the cube. For a cube at the origin with a side length of 2,
+// it's normal vector will correspond to the max absolute value of all components on the point.
+// eg. Point(1, 0.5, -0.8) will be on the +x side of the cube and will have a normal of (1, 0, 0)
+Vector Cube::childNormal(Point p){
+    // maxComponent cannot be set to 1.0 just in case there is floating point error
+    float maxComponent = std::max({std::abs(p.x), std::abs(p.y), std::abs(p.z)});
+
+    if(maxComponent == std::abs(p.x)){
+        return Vector(p.x, 0, 0);
+    }else if(maxComponent == std::abs(p.y)){
+        return Vector(0, p.y, 0);
+    }
+
+    return Vector(0, 0, p.z);
+}
+
+// Computes the time that the ray hits the plane corresponding to a negative and positive face of a cube using time = distance/speed 
+// where speed is the direction parameter passed in and distance will be calculated using the origin parameter
+// eg. Calculates when a ray hits a plane at x=-1 and x=1 to determine if the intersection was on the cube's surface
+std::vector<float> check_axis(float origin, float direction){
+    // Distance from origin to the plane x = -1 or x = 1 if origin corresponds to the cube's origin.x
+    float tmin_numerator = -1 - origin;
+    float tmax_numerator = 1 - origin;
+
+    float tmin, tmax;
+
+    if(std::abs(direction) >= EPSILON){
+        tmin = tmin_numerator/direction;
+        tmax = tmax_numerator/direction;
+    }else{ // if direction is near 0, handles division by 0
+        tmin = tmin_numerator*INFINITY;
+        tmax = tmax_numerator*INFINITY;
+    }
+
+    if(tmin > tmax){
+        std::swap(tmin, tmax);
+    }
+
+    return std::vector<float>({tmin, tmax});
+}
