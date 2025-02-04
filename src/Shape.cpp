@@ -149,7 +149,7 @@ Vector Plane::childNormal(Point p){
     return Vector(0, 1, 0);
 }
 
-// Computes all times a ray hits the cube
+// Computes all intersections of a ray and the cube
 std::vector<Intersection> Cube::childIntersections(Ray r){
     // Computes the times when the ray intersected with the corresponding plane of each face of the cube
     std::vector<float> xt_minmax = check_axis(r.getOrigin().x, r.getDirection().x);
@@ -207,4 +207,130 @@ std::vector<float> check_axis(float origin, float direction){
     }
 
     return std::vector<float>({tmin, tmax});
+}
+
+// Cylinder constructor
+Cylinder::Cylinder(){
+    maxH = INFINITY;
+    minH = -INFINITY;
+    closed = false;
+}
+
+// Getters and setters
+float Cylinder::getMaxH(){
+    return maxH;
+}
+
+float Cylinder::getMinH(){
+    return minH;
+}
+
+bool Cylinder::getClosed(){
+    return closed;
+}
+
+void Cylinder::setMaxH(float h){
+    if(minH > h){
+        throw std::invalid_argument("Cylinder:setMaxH - Invalid input: " + std::to_string(h));
+    }else{
+        maxH = h;
+    }
+}
+
+void Cylinder::setMinH(float h){
+    if(maxH < h){
+        throw std::invalid_argument("Cylinder:setMinH - Invalid input: " + std::to_string(h));
+    }else{
+        minH = h;
+    }
+}
+
+void Cylinder::setClosed(bool c){
+    closed = c;
+}
+
+// Computes all intersections of a ray and the cylinder
+std::vector<Intersection> Cylinder::childIntersections(Ray r){
+    float a = pow(r.getDirection().x, 2) + pow(r.getDirection().z, 2);
+
+    std::vector<Intersection> intersects;
+    // If a is approximately 0, ray does not intersect with cylinder walls
+    if(std::abs(a) < EPSILON){
+        intersectCaps(r, intersects);
+        return intersects;
+    }
+
+    float b = 2*r.getOrigin().x*r.getDirection().x + 2*r.getOrigin().z*r.getDirection().z;
+    float c = pow(r.getOrigin().x, 2) + pow(r.getOrigin().z, 2) - 1;
+    float discriminant = pow(b, 2) - 4*a*c;
+
+    // Ray does not intersect if discriminant is negative
+    if(discriminant < 0){
+        return std::vector<Intersection>();
+    }
+    float t0 = (-b - sqrt(discriminant))/(2*a);
+    float t1 = (-b + sqrt(discriminant))/(2*a);
+    if(t0 > t1){
+        std::swap(t0, t1);
+    }
+
+    // Computes y values of intersections and checks if they are within cylinder top and bottom bounds
+    float y0 = r.getOrigin().y + t0*r.getDirection().y;
+    if(minH < y0 && y0 < maxH){
+        intersects.push_back(Intersection(t0, this));
+    }
+    float y1 = r.getOrigin().y + t1*r.getDirection().y;
+    if(minH < y1 && y1 < maxH){
+        intersects.push_back(Intersection(t1, this));
+    }
+
+    // Add intersections with cylinder caps
+    intersectCaps(r, intersects);
+
+    return intersects;
+}
+
+// Returns normal vector of a point on the cylinder walls or caps(if closed cylinder)
+Vector Cylinder::childNormal(Point p){
+    // Calculates the square of the distance of the point from the y axis, if distance = 1 point is on wall of cylinder
+    float distance = pow(p.x, 2) + pow(p.z, 2);
+
+    // If point is on top cap(first if case), if point is on bottom cap(second if case)
+    // Utilizes EPSILON to avoid any floating point error of the components of point p
+    if(distance < 1 && p.y >= maxH - EPSILON){
+        return Vector(0, 1, 0);
+    }else if(distance < 1 && p.y <= minH + EPSILON){
+        return Vector(0, -1, 0);
+    }
+
+    return Vector(p.x, 0, p.z);
+}
+
+// Checks if ray r at time t is inside the radius of the cylinder
+bool Cylinder::insideCapRadius(Ray r, float t){
+    float x = r.getOrigin().x + t*r.getDirection().x;
+    float z = r.getOrigin().z + t*r.getDirection().z;
+
+    return (pow(x, 2) + pow(z, 2)) <= 1;
+}
+
+// Computes ray intersection with cylinder caps
+void Cylinder::intersectCaps(Ray r, std::vector<Intersection> &intersects){
+    // If cylinder is not closed or ray is travelling parallel to y, intersection never happens
+    // Ignores case when ray is on cylinder cap as there will be infinite intersections
+    if(!closed || floatIsEqual(r.getDirection().y, 0)){
+        return;
+    }
+
+    // Calculates time when ray is level with the bottom cap of the cylinder
+    float t = (minH - r.getOrigin().y)/r.getDirection().y;
+    if(insideCapRadius(r, t)){
+        intersects.push_back(Intersection(t, this));
+    }
+
+    // Calculates time when ray is level with the top cap of the cylinder
+    t = (maxH - r.getOrigin().y)/r.getDirection().y;
+    if(insideCapRadius(r, t)){
+        intersects.push_back(Intersection(t, this));
+    }
 }

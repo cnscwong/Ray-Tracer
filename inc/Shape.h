@@ -4,6 +4,7 @@
 #include "Tuple.h"
 #include "Intersection.h"
 #include "Ray.h"
+#include <stdexcept>
 
 // Parent class for all objects that can be rendered
 class Shape{
@@ -71,7 +72,7 @@ public:
     Vector childNormal(Point p);
 };
 
-// class to represent cubes
+// Class to represent cubes, default cube has a side length of 2 and origin at Point(0, 0, 0)
 class Cube : public Shape{
 public:
     // Shape class override functions
@@ -81,3 +82,32 @@ public:
 
 // Cube helper function for computing intersections
 std::vector<float> check_axis(float origin, float direction);
+
+// Class to represent cylinders, the default cylinder extends infinitely in the +y and -y direction on the y axis
+class Cylinder : public Shape{
+private:
+    // y values of top and bottom of default cylinder(these may not correspond for a transformed cylinder)
+    float maxH;
+    float minH;
+    // boolean determining whether the cylinder has top and bottom caps or is hollow
+    bool closed;
+public:
+    // Constructor
+    Cylinder();
+
+    // Getters and setters
+    float getMaxH();
+    float getMinH();
+    bool getClosed();
+    void setMaxH(float h);
+    void setMinH(float h);
+    void setClosed(bool c);
+
+    // Shape class override functions
+    std::vector<Intersection> childIntersections(Ray r);
+    Vector childNormal(Point p);
+
+    // Intersection helper functions for the top and bottom caps
+    static bool insideCapRadius(Ray r, float t);
+    void intersectCaps(Ray r, std::vector<Intersection> &intersects);
+};

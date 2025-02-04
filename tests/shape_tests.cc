@@ -144,3 +144,154 @@ TEST(CubeChildNormalTest, NormalIsCorrectForDifferentSidesOfTheCube){
     EXPECT_TRUE(result7.isEqual(Vector(1, 0, 0)));
     EXPECT_TRUE(result8.isEqual(Vector(-1, 0, 0)));
 }
+
+TEST(CylinderTest, BasicTest){
+    Cylinder* c = new Cylinder;
+
+    EXPECT_EQ(c->getMaxH(), INFINITY);
+    EXPECT_EQ(c->getMinH(), -INFINITY);
+    EXPECT_EQ(c->getClosed(), false);
+}
+
+TEST(CylinderChildIntersectionsTest, RayMissesCylinder){
+    Cylinder* c = new Cylinder;
+    Ray ray1(Point(1, 0, 0), Vector(0, 1, 0));
+    Ray ray2(Point(0, 0, 0), Vector(0, 1, 0));
+    Ray ray3(Point(0, 0, -5), Vector(1, 1, 1));
+
+    std::vector<Intersection> result1 = c->childIntersections(ray1);
+    std::vector<Intersection> result2 = c->childIntersections(ray2);
+    std::vector<Intersection> result3 = c->childIntersections(ray3);
+
+    EXPECT_EQ(result1.size(), 0);
+    EXPECT_EQ(result2.size(), 0);
+    EXPECT_EQ(result3.size(), 0);
+}
+
+TEST(CylinderChildIntersectionsTest, RayIntersectsCylinder){
+    Cylinder* c = new Cylinder;
+    Ray ray1(Point(1, 0, -5), Vector(0, 0, 1));
+    Ray ray2(Point(0, 0, -5), Vector(0, 0, 1));
+    Ray ray3(Point(0.5, 0, -5), Vector(0.1, 1, 1));
+
+    std::vector<Intersection> result1 = c->childIntersections(ray1);
+    std::vector<Intersection> result2 = c->childIntersections(ray2);
+    std::vector<Intersection> result3 = c->childIntersections(ray3);
+
+    EXPECT_EQ(result1.size(), 2);
+    EXPECT_EQ(result2.size(), 2);
+    EXPECT_EQ(result3.size(), 2);
+    EXPECT_EQ(result1.at(0).getTime(), 5);
+    EXPECT_EQ(result1.at(1).getTime(), 5);
+    EXPECT_EQ(result2.at(0).getTime(), 4);
+    EXPECT_EQ(result2.at(1).getTime(), 6);
+    EXPECT_TRUE(floatIsEqual(result3.at(0).getTime(), 4.80199));
+    EXPECT_TRUE(floatIsEqual(result3.at(1).getTime(), 4.99998));
+}
+
+TEST(CylinderChildIntersectionsTest, RayIntersectsCylinderWithHeightConstraints){
+    Cylinder* c = new Cylinder;
+    c->setMaxH(2);
+    c->setMinH(1);
+    Ray ray1(Point(0, 1.5, 0), Vector(0.1, 1, 0));
+    Ray ray2(Point(0, 3, -5), Vector(0, 0, 1));
+    Ray ray3(Point(0, 0, -5), Vector(0, 0, 1));
+    Ray ray4(Point(0, 2, -5), Vector(0, 0, 1));
+    Ray ray5(Point(0, 1, -5), Vector(0, 0, 1));
+    Ray ray6(Point(0, 1.5, -2), Vector(0, 0, 1));
+
+    std::vector<Intersection> result1 = c->childIntersections(ray1);
+    std::vector<Intersection> result2 = c->childIntersections(ray2);
+    std::vector<Intersection> result3 = c->childIntersections(ray3);
+    std::vector<Intersection> result4 = c->childIntersections(ray4);
+    std::vector<Intersection> result5 = c->childIntersections(ray5);
+    std::vector<Intersection> result6 = c->childIntersections(ray6);
+
+    EXPECT_EQ(result1.size(), 0);
+    EXPECT_EQ(result2.size(), 0);
+    EXPECT_EQ(result3.size(), 0);
+    EXPECT_EQ(result4.size(), 0);
+    EXPECT_EQ(result5.size(), 0);
+    EXPECT_EQ(result6.size(), 2);
+    EXPECT_EQ(result6.at(0).getTime(), 1);
+    EXPECT_EQ(result6.at(1).getTime(), 3);
+}
+
+TEST(CylinderChildIntersectionsTest, RayIntersectsWithCylinderCaps){
+    Cylinder* c = new Cylinder;
+    c->setMaxH(2);
+    c->setMinH(1);
+    c->setClosed(true);
+    Ray ray1(Point(0, 3, 0), Vector(0, -1, 0));
+    Ray ray2(Point(0, 3, -2), Vector(0, -1, 2));
+    Ray ray3(Point(0, 4, -2), Vector(0, -1, 1));
+    Ray ray4(Point(0, 0, -2), Vector(0, 1, 2));
+    Ray ray5(Point(0, -1, -2), Vector(0, 1, 1));
+
+    std::vector<Intersection> result1 = c->childIntersections(ray1);
+    std::vector<Intersection> result2 = c->childIntersections(ray2);
+    std::vector<Intersection> result3 = c->childIntersections(ray3);
+    std::vector<Intersection> result4 = c->childIntersections(ray4);
+    std::vector<Intersection> result5 = c->childIntersections(ray5);
+
+    EXPECT_EQ(result1.size(), 2);
+    EXPECT_EQ(result2.size(), 2);
+    EXPECT_EQ(result3.size(), 2);
+    EXPECT_EQ(result4.size(), 2);
+    EXPECT_EQ(result5.size(), 2);
+    EXPECT_EQ(result1.at(0).getTime(), 2);
+    EXPECT_EQ(result1.at(1).getTime(), 1);
+    EXPECT_EQ(result2.at(0).getTime(), 1.5);
+    EXPECT_EQ(result2.at(1).getTime(), 1);
+    EXPECT_EQ(result3.at(0).getTime(), 3);
+    EXPECT_EQ(result3.at(1).getTime(), 2);
+    EXPECT_EQ(result4.at(0).getTime(), 1.5);
+    EXPECT_EQ(result4.at(1).getTime(), 1);
+    EXPECT_EQ(result5.at(0).getTime(), 2);
+    EXPECT_EQ(result5.at(1).getTime(), 3);
+}
+
+TEST(CylinderChildNormalTest, NormalIsCorrectOnCylinderWalls){
+    Cylinder* c = new Cylinder;
+    Point p1(1, 0, 0);
+    Point p2(0, 5, -1);
+    Point p3(0, -2, 1);
+    Point p4(-1, 1, 0);
+
+    Vector result1 = c->childNormal(p1);
+    Vector result2 = c->childNormal(p2);
+    Vector result3 = c->childNormal(p3);
+    Vector result4 = c->childNormal(p4);
+
+    EXPECT_TRUE(result1.isEqual(Vector(1, 0, 0)));
+    EXPECT_TRUE(result2.isEqual(Vector(0, 0, -1)));
+    EXPECT_TRUE(result3.isEqual(Vector(0, 0, 1)));
+    EXPECT_TRUE(result4.isEqual(Vector(-1, 0, 0)));
+}
+
+TEST(CylinderChildNormalTest, NormalIsCorrectOnCylinderCaps){
+    Cylinder* c = new Cylinder;
+    c->setMaxH(2);
+    c->setMinH(1);
+    c->setClosed(true);
+    Point p1(0, 1, 0);
+    Point p2(0.5, 1, 0);
+    Point p3(0, 1, 0.5);
+    Point p4(0, 2, 0);
+    Point p5(0.5, 2, 0);
+    Point p6(0, 2, 0.5);
+
+    Vector result1 = c->childNormal(p1);
+    Vector result2 = c->childNormal(p2);
+    Vector result3 = c->childNormal(p3);
+    Vector result4 = c->childNormal(p4);
+    Vector result5 = c->childNormal(p5);
+    Vector result6 = c->childNormal(p6);
+
+    EXPECT_TRUE(result1.isEqual(Vector(0, -1, 0)));
+    EXPECT_TRUE(result2.isEqual(Vector(0, -1, 0)));
+    EXPECT_TRUE(result3.isEqual(Vector(0, -1, 0)));
+    EXPECT_TRUE(result4.isEqual(Vector(0, 1, 0)));
+    EXPECT_TRUE(result5.isEqual(Vector(0, 1, 0)));
+    EXPECT_TRUE(result6.isEqual(Vector(0, 1, 0)));
+}
