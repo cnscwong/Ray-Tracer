@@ -25,7 +25,9 @@ int main(){
     m.pattern = p1;
     floor->setMaterial(m);
 
-    Sphere* middle = new Sphere;
+    Cone* middle = new Cone;
+    middle->setClosed(true);
+    middle->setMinH(-3);
     middle->setTransform(translationMatrix(-0.5, 1, 0.5));
     m = Material();
     m.colour = Colour(0.1, 1, 0.5);
@@ -48,13 +50,13 @@ int main(){
 
     World w;
     w.setLight(LightSource(Point(-10, 10, -10), Colour(1, 1, 1)));
-    w.appendObject(floor);
+    // w.appendObject(floor);
     w.appendObject(middle);
     w.appendObject(right);
     w.appendObject(left);
 
-    Camera c(1000, 500, PI/3);
-    c.setTransform(viewTransformationMatrix(Point(0, 1.5, -5), Point(0, 1, 0), Vector(0, 1, 0)));
+    Camera c(100, 50, PI/3);
+    c.setTransform(viewTransformationMatrix(Point(0, -6, -10), Point(0, 1, 0), Vector(0, 1, 0)));
     Canvas canvas = c.render(w);
 
     canvas.writeToFile("out.ppm");

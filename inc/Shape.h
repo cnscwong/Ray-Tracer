@@ -111,3 +111,32 @@ public:
     static bool insideCapRadius(Ray r, float t);
     void intersectCaps(Ray r, std::vector<Intersection> &intersects);
 };
+
+// Class to represent cones, the default cone extends infinitely in the +y and -y direction on the y axis
+class Cone : public Shape{
+private:
+    // y values of top and bottom of default cone(these may not correspond for a transformed cone)
+    float maxH;
+    float minH;
+    // boolean determining whether the cone has top and bottom caps or is hollow
+    bool closed;
+public:
+    // Constructor
+    Cone();
+
+    // Getters and setters
+    float getMaxH();
+    float getMinH();
+    bool getClosed();
+    void setMaxH(float h);
+    void setMinH(float h);
+    void setClosed(bool c);
+
+    // Shape class override functions
+    std::vector<Intersection> childIntersections(Ray r);
+    Vector childNormal(Point p);
+
+    // Intersection helper functions for the top and bottom caps
+    static bool insideCapRadius(Ray r, float t, float radius);
+    void intersectCaps(Ray r, std::vector<Intersection> &intersects);
+};
