@@ -1,9 +1,9 @@
 cc_library(
     name = "source",
     srcs = ["src/Tuple.cpp", "src/common.cpp", "src/Colour.cpp", "src/Canvas.cpp", "src/Matrix.cpp", "src/Ray.cpp", "src/Intersection.cpp",
-    "src/LightAndShading.cpp", "src/World.cpp", "src/LightData.cpp", "src/Camera.cpp", "src/Shape.cpp", "src/Pattern.cpp"], 
-    hdrs = ["inc/Tuple.h", "inc/common.h", "inc/Colour.h", "inc/Canvas.h", "inc/Matrix.h", "inc/Ray.h", "inc/Intersection.h",
-    "inc/LightAndShading.h", "inc/World.h", "inc/LightData.h", "inc/Camera.h", "inc/Config.h", "inc/Shape.h", "inc/Pattern.h"], 
+    "src/LightAndShading.cpp", "src/World.cpp", "src/LightData.cpp", "src/Camera.cpp", "src/Shape.cpp", "src/Pattern.cpp", "src/Group.cpp"], 
+    hdrs = ["inc/Tuple.h", "inc/common.h", "inc/Colour.h", "inc/Canvas.h", "inc/Matrix.h", "inc/Ray.h", "inc/Intersection.h", "inc/LightAndShading.h",
+    "inc/World.h", "inc/LightData.h", "inc/Camera.h", "inc/Config.h", "inc/Shape.h", "inc/Pattern.h", "inc/Group.h"], 
     includes = ["inc"]
 )
 

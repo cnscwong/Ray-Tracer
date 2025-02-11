@@ -5,19 +5,25 @@
 #include "Intersection.h"
 #include "Ray.h"
 #include <stdexcept>
+class Group;
+// Forward declaration of group because group is a child of shape and contains shapes
+// A shape can have a group it belongs to
 
 // Parent class for all objects that can be rendered
 class Shape{
 protected:
     // Stores material of shape and the matrix transformation that is applied to the shape
     Matrix transform = Matrix(4);
-    Material material;
+    Material material = Material();
+    Group* parent = nullptr;
 public:
     // Getter and setter for transform and material
     Matrix getTransform();
     void setTransform(Matrix m);
     Material getMaterial();
     void setMaterial(Material m);
+    Group* getParent();
+    void setParent(Group* p);
 
     // Returns a vector of intersection objects where the ray r intersects the surface of the shape
     // findIntersections does some preprocessing that would be done for any shape
@@ -31,7 +37,15 @@ public:
     // childIntersections executes custom code depending on what child class is being executed
     virtual Vector childNormal(Point p);
 
+    // Equality check function
     virtual bool isEqual(Shape* s);
+    
+    // Recursive functions for groups
+    // Converts a point in the world to a point relative to the shape
+    // Utilizes the shape's transform as well as any parent group transforms
+    Point worldToObject(Point p);
+    // Converts a normal vector relative to the shape to a vector in the world coordinates
+    Vector normalToWorld(Vector normal);
 };
 
 // Class to represent spheres in the canvas, stores origin and radius, origin is center of sphere

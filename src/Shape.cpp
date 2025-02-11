@@ -1,4 +1,5 @@
 #include "Shape.h"
+#include "Group.h"
 
 // Getter and setter for transform and material
 Matrix Shape::getTransform(){
@@ -15,6 +16,14 @@ Material Shape::getMaterial(){
 
 void Shape::setMaterial(Material m){
     material = m;
+}
+
+Group* Shape::getParent(){
+    return parent;
+}
+
+void Shape::setParent(Group* p){
+    parent = p;
 }
 
 // Returns a vector of intersections where the ray intersects the surface of the shape
@@ -35,15 +44,9 @@ std::vector<Intersection> Shape::childIntersections(Ray r){
 // Computes the normal vector of a point on the surface of the shape
 // findIntersections does some preprocessing that would be done for any shape
 Vector Shape::computeNormal(Point p){
-    // Converts point p to a point relative to the shape(what p would be if shape origin was at 0)
-    Point shape_point((transform.inverse()*p));
-    // Computes a normal relative to the sphere
-    Vector shape_normal = childNormal(shape_point);
-    // Converts the computed normal back to points relative to the world
-    Vector world_normal = (transform.inverse().transpose()*shape_normal);
-    world_normal.point = 0;
-
-    return world_normal.normalize();
+    Point objectPoint = worldToObject(p);
+    Vector objectNormal = childNormal(objectPoint);
+    return normalToWorld(objectNormal);
 }
 
 // childIntersections executes custom code depending on what child class is being executed
@@ -54,6 +57,26 @@ Vector Shape::childNormal(Point p){
 // Shape equality function
 bool Shape::isEqual(Shape* s){
     return transform.isEqual(s->getTransform()) && material.isEqual(s->getMaterial());
+}
+
+// Converts a point in the world to a point relative to the shape
+// eg. Converts the point to where it would be if the shape was at the origin
+Point Shape::worldToObject(Point p){
+    if(parent != nullptr){
+        p = parent->worldToObject(p);
+    }
+
+    return transform.inverse()*p;
+}
+
+Vector Shape::normalToWorld(Vector normal){
+    normal = Vector(transform.inverse().transpose()*normal);
+    normal = normal.normalize();
+
+    if(parent != nullptr){
+        normal = parent->normalToWorld(normal);
+    }
+    return normal;
 }
 
 // Sphere constructors

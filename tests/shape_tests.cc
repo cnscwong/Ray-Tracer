@@ -5,6 +5,7 @@
 #include <vector>
 #include "Intersection.h"
 #include "Ray.h"
+#include "Group.h"
 
 TEST(ShapeTest, BasicTest){
     Shape s;
@@ -16,6 +17,7 @@ TEST(ShapeTest, BasicTest){
     m.ambient = 1;
     s.setMaterial(m);
     EXPECT_TRUE(s.getMaterial().isEqual(m));
+    EXPECT_EQ(s.getParent(), nullptr);
 }
 
 TEST(PlaneChildNormalTest, AllNormalVectorsAreTheSame){
@@ -396,4 +398,111 @@ TEST(ConeChildNormalTest, NormalIsCorrectOnConeCaps){
     EXPECT_TRUE(result2.isEqual(Vector(0, 1, 0)));
     EXPECT_TRUE(result3.isEqual(Vector(0, -1, 0)));
     EXPECT_TRUE(result4.isEqual(Vector(0, -1, 0)));
+}
+
+TEST(GroupTest, BasicTest){
+    Group* g = new Group;
+
+    EXPECT_TRUE(g->getTransform().isEqual(Matrix(4)));
+    EXPECT_EQ(g->getShapes().size(), 0);
+}
+
+TEST(Group_appendShapeTest, GroupContainsShapeAndShapeHasParentGroupTest){
+    Group* g = new Group;
+    Shape* s = new Shape;
+
+    g->appendShape(s);
+
+    EXPECT_EQ(g->getShapes().size(), 1);
+    EXPECT_TRUE(g->getShapes().at(0)->isEqual(s));
+    EXPECT_EQ(s->getParent(), g);
+}
+
+TEST(Group_childIntersectionsTest, RayMissesGroup){
+    Group* g = new Group;
+    Ray r(Point(), Vector(0, 0, 1));
+
+    std::vector<Intersection> result = g->childIntersections(r);
+
+    EXPECT_EQ(result.size(), 0);
+}
+
+TEST(Group_childIntersectionsTest, RayHitsGroup){
+    Group* g = new Group;
+    Sphere* s1 = new Sphere;
+    Sphere* s2 = new Sphere;
+    s2->setTransform(translationMatrix(0, 0, -3));
+    Sphere* s3 = new Sphere;
+    s3->setTransform(translationMatrix(5, 0, 0));
+    g->appendShape(s1);
+    g->appendShape(s2);
+    g->appendShape(s3);
+    Ray r(Point(0, 0, -5), Vector(0, 0, 1));
+
+    std::vector<Intersection> result = g->childIntersections(r);
+
+    EXPECT_EQ(result.size(), 4);
+    EXPECT_EQ(result.at(0).getShape(), s2);
+    EXPECT_EQ(result.at(1).getShape(), s2);
+    EXPECT_EQ(result.at(2).getShape(), s1);
+    EXPECT_EQ(result.at(3).getShape(), s1);
+}
+
+TEST(Group_findIntersectionsTest, GroupTransformationAppliedToChildShapes){
+    Group* g = new Group;
+    g->setTransform(scalingMatrix(2, 2, 2));
+    Sphere* s = new Sphere;
+    s->setTransform(translationMatrix(5, 0, 0));
+    g->appendShape(s);
+    Ray r(Point(10, 0, -10), Vector(0, 0, 1));
+
+    // Only intersects s if the group transformation is applied
+    std::vector<Intersection> result = g->findIntersections(r);
+
+    EXPECT_EQ(result.size(), 2);
+}
+
+TEST(Shape_WorldToObjectTest, PointConvertedToObjectSpaceInNestedGroup){
+    Group* g1 = new Group;
+    g1->setTransform(yRotationMatrix(PI/2));
+    Group* g2 = new Group;
+    g2->setTransform(scalingMatrix(2, 2, 2));
+    g1->appendShape(g2);
+    Sphere* s = new Sphere;
+    s->setTransform(translationMatrix(5, 0, 0));
+    g2->appendShape(s);
+
+    Point p = s->worldToObject(Point(-2, 0, -10));
+
+    EXPECT_TRUE(p.isEqual(Point(0, 0, -1)));
+}
+
+TEST(Shape_NormalToWorldTest, NormalConvertedToObjectSpaceInNestedGroup){
+    Group* g1 = new Group;
+    g1->setTransform(yRotationMatrix(PI/2));
+    Group* g2 = new Group;
+    g2->setTransform(scalingMatrix(1, 2, 3));
+    g1->appendShape(g2);
+    Sphere* s = new Sphere;
+    s->setTransform(translationMatrix(5, 0, 0));
+    g2->appendShape(s);
+
+    Vector n = s->normalToWorld(Vector(sqrt(3)/3, sqrt(3)/3, sqrt(3)/3));
+
+    EXPECT_TRUE(n.isEqual(Vector(0.2857, 0.4286, -0.8571)));
+}
+
+TEST(Shape_ComputeNormalTest, NormalCorrectForChildShape){
+    Group* g1 = new Group;
+    g1->setTransform(yRotationMatrix(PI/2));
+    Group* g2 = new Group;
+    g2->setTransform(scalingMatrix(1, 2, 3));
+    g1->appendShape(g2);
+    Sphere* s = new Sphere;
+    s->setTransform(translationMatrix(5, 0, 0));
+    g2->appendShape(s);
+
+    Vector n = s->computeNormal(Point(1.7321, 1.1547, -5.5774));
+
+    EXPECT_TRUE(n.isEqual(Vector(0.2857, 0.4286, -0.8571)));
 }
