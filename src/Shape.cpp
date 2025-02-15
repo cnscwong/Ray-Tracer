@@ -79,28 +79,13 @@ Vector Shape::normalToWorld(Vector normal){
     return normal;
 }
 
-// Sphere constructors
-Sphere::Sphere(){
-    radius = 1;
-    origin = Point();
-}
-
-// Getters for sphere variables
-float Sphere::getRadius(){
-    return radius;
-}
-
-Point Sphere::getOrigin(){
-    return origin;
-}
-
 // Checks equality of spheres
 bool Sphere::isEqual(Shape* s){
     Sphere* s1 = dynamic_cast<Sphere*>(s);
     if(s1 == nullptr){
         return false;
     }else{
-        return origin.isEqual(s1->getOrigin()) && floatIsEqual(radius, s1->getRadius()) && Shape::isEqual(s);
+        return Shape::isEqual(s);
     }
 }
 
@@ -111,7 +96,7 @@ bool Sphere::isEqual(Shape* s){
 // Search about "Line-sphere intersection" for more info on how the math works
 std::vector<Intersection> Sphere::childIntersections(Ray r){
     // Vector from spheres center to the ray origin
-    Vector sphere_to_ray = Vector(r.getOrigin() - origin);
+    Vector sphere_to_ray = Vector(r.getOrigin() - Point());
     float a = dotProduct(r.getDirection(), r.getDirection());
     float b = 2*dotProduct(r.getDirection(), sphere_to_ray);
     float c = dotProduct(sphere_to_ray, sphere_to_ray) - 1;
@@ -503,4 +488,74 @@ void Cone::intersectCaps(Ray r, std::vector<Intersection> &intersects){
     if(insideCapRadius(r, t, maxH)){
         intersects.push_back(Intersection(t, this));
     }
+}
+
+// Triangle constructor
+Triangle::Triangle(Point p1, Point p2, Point p3){
+    this->p1 = p1;
+    this->p2 = p2;
+    this->p3 = p3;
+    e1 = p2 - p1;
+    e2 = p3 - p1;
+    normal = crossProduct(e2, e1).normalize(); 
+}
+
+// Triangle getters
+Point Triangle::getP1(){
+    return p1;
+}
+
+Point Triangle::getP2(){
+    return p2;
+}
+
+Point Triangle::getP3(){
+    return p3;
+}
+
+Vector Triangle::getE1(){
+    return e1;
+}
+
+Vector Triangle::getE2(){
+    return e2;
+}
+
+Vector Triangle::getNormal(){
+    return normal;
+}
+
+// Moller-Trumbore ray-triangle intersection algorithm
+std::vector<Intersection> Triangle::childIntersections(Ray r){
+    Vector dir_cross_e2 = crossProduct(r.getDirection(), e2);
+    float det = dotProduct(e1, dir_cross_e2);
+
+    // Ray is parallel to triangle
+    if(std::abs(det) < EPSILON){
+        return std::vector<Intersection>();
+    }
+
+    // Ray misses p1-p3 edge
+    float f = 1.0/det;
+    Vector p1_to_origin = r.getOrigin() - p1;
+    float u = f*dotProduct(p1_to_origin, dir_cross_e2);
+    if(u < 0 || u > 1){
+        return std::vector<Intersection>();
+    }
+
+    // Ray misses p1-p2 edge and ray misses the p2-p3 edge
+    Vector origin_cross_e1 = crossProduct(p1_to_origin, e1);
+    float v = f*dotProduct(r.getDirection(), origin_cross_e1);
+    if(v < 0 || (u + v) > 1){
+        return std::vector<Intersection>();
+    }
+
+    // Ray hits the triangle
+    float t = f*dotProduct(e2, origin_cross_e1);
+    return std::vector<Intersection>({Intersection(t, this)});
+}
+
+// The normal on any point of the triangle is the precomputed normal
+Vector Triangle::childNormal(Point p){
+    return normal;
 }

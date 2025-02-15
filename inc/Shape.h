@@ -48,21 +48,9 @@ public:
     Vector normalToWorld(Vector normal);
 };
 
-// Class to represent spheres in the canvas, stores origin and radius, origin is center of sphere
+// Class to represent spheres in the canvas, default sphere has a radius of 1 and the center is at the origin
 class Sphere: public Shape{
-    private:
-        Point origin;
-        float radius;
     public:
-        // Stores sphere ids
-        int id;
-        // Sphere constructors
-        Sphere();
-
-        // Getters for sphere variables
-        float getRadius();
-        Point getOrigin();
-
         // Checks if sphere is equal to s
         bool isEqual(Shape* s);
 
@@ -153,4 +141,30 @@ public:
     // Intersection helper functions for the top and bottom caps
     static bool insideCapRadius(Ray r, float t, float radius);
     void intersectCaps(Ray r, std::vector<Intersection> &intersects);
+};
+
+// Class to represent triangles
+class Triangle : public Shape{
+private:
+    // Points storing the triangle corners
+    Point p1, p2, p3;
+    // Precomputed edge vectors from p1 to p2(e1), and p1 to p3(e2)
+    Vector e1, e2;
+    // Precomputed triangle normal vector
+    Vector normal;
+public:
+    // Triangle constructor
+    Triangle(Point p1, Point p2, Point p3);
+
+    // Getters
+    Point getP1();
+    Point getP2();
+    Point getP3();
+    Vector getE1();
+    Vector getE2();
+    Vector getNormal();
+
+    // Shape class override functions
+    std::vector<Intersection> childIntersections(Ray r);
+    Vector childNormal(Point p);
 };

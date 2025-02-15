@@ -492,7 +492,7 @@ TEST(Shape_NormalToWorldTest, NormalConvertedToObjectSpaceInNestedGroup){
     EXPECT_TRUE(n.isEqual(Vector(0.2857, 0.4286, -0.8571)));
 }
 
-TEST(Shape_ComputeNormalTest, NormalCorrectForChildShape){
+TEST(Shape_ComputeNormalTest, NormalCorrectForChildShapeInNestedGroup){
     Group* g1 = new Group;
     g1->setTransform(yRotationMatrix(PI/2));
     Group* g2 = new Group;
@@ -505,4 +505,76 @@ TEST(Shape_ComputeNormalTest, NormalCorrectForChildShape){
     Vector n = s->computeNormal(Point(1.7321, 1.1547, -5.5774));
 
     EXPECT_TRUE(n.isEqual(Vector(0.2857, 0.4286, -0.8571)));
+}
+
+TEST(Triangle_ConstructorTest, BasicTest){
+    Point p1(0, 1, 0);
+    Point p2(-1, 0, 0);
+    Point p3(1, 0, 0);
+    Triangle* t = new Triangle(p1, p2, p3);
+
+    EXPECT_TRUE(t->getP1().isEqual(p1));
+    EXPECT_TRUE(t->getP2().isEqual(p2));
+    EXPECT_TRUE(t->getP3().isEqual(p3));
+    EXPECT_TRUE(t->getE1().isEqual(Vector(-1, -1, 0)));
+    EXPECT_TRUE(t->getE2().isEqual(Vector(1, -1, 0)));
+    EXPECT_TRUE(t->getNormal().isEqual(Vector(0, 0, -1)));
+}
+
+TEST(Triangle_ComputeNormalTest, NormalCorrectOnTriangle){
+    Triangle* t = new Triangle(Point(0, 1, 0), Point(-1, 0, 0), Point(1, 0, 0));
+    
+    Vector n1 = t->childNormal(Point(0, 0.5, 0));
+    Vector n2 = t->childNormal(Point(-0.5, 0.75, 0));
+    Vector n3 = t->childNormal(Point(0.5, 0.25, 0));
+
+    EXPECT_TRUE(n1.isEqual(t->getNormal()));
+    EXPECT_TRUE(n2.isEqual(t->getNormal()));
+    EXPECT_TRUE(n3.isEqual(t->getNormal()));
+}
+
+TEST(Triangle_ChildIntersectionTest, RayParallelToTriangle){
+    Triangle* t = new Triangle(Point(0, 1, 0), Point(-1, 0, 0), Point(1, 0, 0));
+    Ray r(Point(0, -1, -2), Vector(0, 1, 0));
+
+    std::vector<Intersection> results = t->childIntersections(r);
+
+    EXPECT_EQ(results.size(), 0);
+}
+
+TEST(Triangle_ChildIntersectionTest, RayMissesP1P3Edge){
+    Triangle* t = new Triangle(Point(0, 1, 0), Point(-1, 0, 0), Point(1, 0, 0));
+    Ray r(Point(1, 1, -2), Vector(0, 0, 1));
+
+    std::vector<Intersection> results = t->childIntersections(r);
+
+    EXPECT_EQ(results.size(), 0);
+}
+
+TEST(Triangle_ChildIntersectionTest, RayMissesP1P2Edge){
+    Triangle* t = new Triangle(Point(0, 1, 0), Point(-1, 0, 0), Point(1, 0, 0));
+    Ray r(Point(-1, 1, -2), Vector(0, 0, 1));
+
+    std::vector<Intersection> results = t->childIntersections(r);
+
+    EXPECT_EQ(results.size(), 0);
+}
+
+TEST(Triangle_ChildIntersectionTest, RayMissesP2P3Edge){
+    Triangle* t = new Triangle(Point(0, 1, 0), Point(-1, 0, 0), Point(1, 0, 0));
+    Ray r(Point(0, -1, -2), Vector(0, 0, 1));
+
+    std::vector<Intersection> results = t->childIntersections(r);
+
+    EXPECT_EQ(results.size(), 0);
+}
+
+TEST(Triangle_ChildIntersectionTest, RayIntersectsTriangle){
+    Triangle* t = new Triangle(Point(0, 1, 0), Point(-1, 0, 0), Point(1, 0, 0));
+    Ray r(Point(0, 0.5, -2), Vector(0, 0, 1));
+
+    std::vector<Intersection> results = t->childIntersections(r);
+
+    EXPECT_EQ(results.size(), 1);
+    EXPECT_EQ(results.at(0).getTime(), 2);
 }
