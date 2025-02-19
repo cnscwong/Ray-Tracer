@@ -1,5 +1,13 @@
 #include "Group.h"
 
+Group::Group(){
+    name = "";
+}
+
+Group::Group(std::string n){
+    name = n;
+}
+
 std::vector<Shape*> Group::getShapes(){
     return shapes;
 }
