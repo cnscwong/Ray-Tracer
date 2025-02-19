@@ -6,6 +6,7 @@
 #include "Intersection.h"
 #include "Ray.h"
 #include "Group.h"
+#include "LightData.h"
 
 TEST(ShapeTest, BasicTest){
     Shape s;
@@ -577,4 +578,70 @@ TEST(Triangle_ChildIntersectionTest, RayIntersectsTriangle){
 
     EXPECT_EQ(results.size(), 1);
     EXPECT_EQ(results.at(0).getTime(), 2);
+}
+
+TEST(SmoothTriangle_ConstructorTest, BasicTest){
+    Point p1(0, 1, 0);
+    Point p2(-1, 0, 0);
+    Point p3(1, 0, 0);
+    Vector n1(0, 1, 0);
+    Vector n2(-1, 0, 0);
+    Vector n3(1, 0, 0);
+    SmoothTriangle* t = new SmoothTriangle(p1, p2, p3, n1, n2, n3);
+
+    EXPECT_TRUE(t->getP1().isEqual(p1));
+    EXPECT_TRUE(t->getP2().isEqual(p2));
+    EXPECT_TRUE(t->getP3().isEqual(p3));
+    EXPECT_TRUE(t->getN1().isEqual(n1));
+    EXPECT_TRUE(t->getN2().isEqual(n2));
+    EXPECT_TRUE(t->getN3().isEqual(n3));
+}
+
+TEST(SmoothTriangle_ChildIntersectionsTest, IntersectionHasUVValues){
+    Point p1(0, 1, 0);
+    Point p2(-1, 0, 0);
+    Point p3(1, 0, 0);
+    Vector n1(0, 1, 0);
+    Vector n2(-1, 0, 0);
+    Vector n3(1, 0, 0);
+    SmoothTriangle* t = new SmoothTriangle(p1, p2, p3, n1, n2, n3);
+    Ray r(Point(-0.2, 0.3, -2), Vector(0, 0, 1));
+
+    std::vector<Intersection> result = t->childIntersections(r);
+
+    EXPECT_EQ(result.size(), 1);
+    EXPECT_TRUE(floatIsEqual(result.at(0).getU(), 0.45));
+    EXPECT_TRUE(floatIsEqual(result.at(0).getV(), 0.25));
+}
+
+TEST(SmoothTriangle_ChildNormalTest, NormalVectorComputedWithSmoothTriangleValues){
+    Point p1(0, 1, 0);
+    Point p2(-1, 0, 0);
+    Point p3(1, 0, 0);
+    Vector n1(0, 1, 0);
+    Vector n2(-1, 0, 0);
+    Vector n3(1, 0, 0);
+    SmoothTriangle* t = new SmoothTriangle(p1, p2, p3, n1, n2, n3);
+    Intersection i(1, t, 0.45, 0.25);
+
+    Vector n = t->computeNormal(Point(), i);
+
+    EXPECT_TRUE(n.isEqual(Vector(-0.5547, 0.83205, 0)));
+}
+
+TEST(PrepareLightDataTest, NormalVectorComputedForSmoothTriangles){
+    Point p1(0, 1, 0);
+    Point p2(-1, 0, 0);
+    Point p3(1, 0, 0);
+    Vector n1(0, 1, 0);
+    Vector n2(-1, 0, 0);
+    Vector n3(1, 0, 0);
+    SmoothTriangle* t = new SmoothTriangle(p1, p2, p3, n1, n2, n3);
+    Intersection i(1, t, 0.45, 0.25);
+    Ray r(Point(-0.2, 0.3, -2), Vector(0, 0, 1));
+    std::vector<Intersection> intersects({i});
+
+    LightData data = prepareLightData(i, r, intersects);
+
+    EXPECT_TRUE(data.normal.isEqual(Vector(-0.5547, 0.83205, 0)));
 }

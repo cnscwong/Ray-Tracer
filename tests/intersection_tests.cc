@@ -4,6 +4,16 @@
 #include "common.h"
 #include "Intersection.h"
 
+TEST(IntersectionTest, BasicTest){
+    Shape* s = new Sphere;
+    Intersection i(3.5, s, 0.2, 0.4);
+
+    EXPECT_EQ(i.getTime(), 3.5);
+    EXPECT_TRUE(i.getShape()->isEqual(s));
+    EXPECT_TRUE(floatIsEqual(i.getU(), 0.2));
+    EXPECT_TRUE(floatIsEqual(i.getV(), 0.4));
+}
+
 // Testing the intersections function
 TEST(IntersectionTest, PackingTest){
     Shape* s = new Sphere;

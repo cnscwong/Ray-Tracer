@@ -23,7 +23,7 @@ LightData prepareLightData(Intersection i, Ray r, std::vector<Intersection> rayI
 
     data.point = r.computePosition(data.time);
     data.camera = Vector(r.getDirection().negateTuple());
-    data.normal = data.object->computeNormal(data.point);
+    data.normal = data.object->computeNormal(data.point, i);
 
     if(dotProduct(data.normal, data.camera) < 0){
         data.insideObject = true;

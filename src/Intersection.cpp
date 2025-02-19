@@ -1,10 +1,17 @@
 #include "Intersection.h"
 #include "Shape.h"
 
-// Intersection constructor
+// Intersection constructors
 Intersection::Intersection(float t, Shape* s){
     time = t;
     this->s = s;
+}
+
+Intersection::Intersection(float t, Shape* s, float u, float v){
+    time = t;
+    this->s = s;
+    this->u = u;
+    this->v = v;
 }
 
 // Getters for Intersection variables
@@ -14,6 +21,14 @@ float Intersection::getTime(){
 
 Shape* Intersection::getShape(){
     return s;
+}
+
+float Intersection::getU(){
+    return u;
+}
+
+float Intersection::getV(){
+    return v;
 }
 
 bool Intersection::isEqual(Intersection i){

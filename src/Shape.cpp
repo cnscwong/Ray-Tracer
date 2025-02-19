@@ -43,14 +43,14 @@ std::vector<Intersection> Shape::childIntersections(Ray r){
 
 // Computes the normal vector of a point on the surface of the shape
 // findIntersections does some preprocessing that would be done for any shape
-Vector Shape::computeNormal(Point p){
+Vector Shape::computeNormal(Point p, Intersection hit){
     Point objectPoint = worldToObject(p);
-    Vector objectNormal = childNormal(objectPoint);
+    Vector objectNormal = childNormal(objectPoint, hit);
     return normalToWorld(objectNormal);
 }
 
 // childIntersections executes custom code depending on what child class is being executed
-Vector Shape::childNormal(Point p){
+Vector Shape::childNormal(Point p, Intersection hit){
     return Vector();
 }
 
@@ -120,7 +120,7 @@ std::vector<Intersection> Sphere::childIntersections(Ray r){
 // Computes the normal vector at the point p on the surface of the sphere
 // The normal vector is the vector that is perpendicular to the surface of the sphere
 // and has a magnitude equal to 1(normalized). Assume point p is always on surface of sphere
-Vector Sphere::childNormal(Point p){
+Vector Sphere::childNormal(Point p, Intersection hit){
     // Computes the normal vector relative to the sphere
     Vector sphere_normal((p - Point(0, 0, 0)));
     return sphere_normal;
@@ -153,7 +153,7 @@ std::vector<Intersection> Plane::childIntersections(Ray r){
 }
 
 // The default plane is an xz plane, so the normal vector will be Vector(0, 1, 0)
-Vector Plane::childNormal(Point p){
+Vector Plane::childNormal(Point p, Intersection hit){
     return Vector(0, 1, 0);
 }
 
@@ -179,7 +179,7 @@ std::vector<Intersection> Cube::childIntersections(Ray r){
 // Computes the normal vector of a point on the cube. For a cube at the origin with a side length of 2,
 // it's normal vector will correspond to the max absolute value of all components on the point.
 // eg. Point(1, 0.5, -0.8) will be on the +x side of the cube and will have a normal of (1, 0, 0)
-Vector Cube::childNormal(Point p){
+Vector Cube::childNormal(Point p, Intersection hit){
     // maxComponent cannot be set to 1.0 just in case there is floating point error
     float maxComponent = std::max({std::abs(p.x), std::abs(p.y), std::abs(p.z)});
 
@@ -306,7 +306,7 @@ std::vector<Intersection> Cylinder::childIntersections(Ray r){
 }
 
 // Returns normal vector of a point on the cylinder walls or caps(if closed cylinder)
-Vector Cylinder::childNormal(Point p){
+Vector Cylinder::childNormal(Point p, Intersection hit){
     // Calculates the square of the distance of the point from the y axis, if distance = 1 point is on wall of cylinder
     float distance = pow(p.x, 2) + pow(p.z, 2);
 
@@ -442,7 +442,7 @@ std::vector<Intersection> Cone::childIntersections(Ray r){
 }
 
 // Returns normal vector of a point on the cone walls or caps(if closed cone)
-Vector Cone::childNormal(Point p){
+Vector Cone::childNormal(Point p, Intersection hit){
     // Calculates the square of the distance of the point from the y axis, if distance = 1 point is on wall of cone
     float distance = pow(p.x, 2) + pow(p.z, 2);
 
@@ -556,6 +556,59 @@ std::vector<Intersection> Triangle::childIntersections(Ray r){
 }
 
 // The normal on any point of the triangle is the precomputed normal
-Vector Triangle::childNormal(Point p){
+Vector Triangle::childNormal(Point p, Intersection hit){
     return normal;
+}
+
+// SmoothTriangle Constructor
+SmoothTriangle::SmoothTriangle(Point p1, Point p2, Point p3, Vector n1, Vector n2, Vector n3): Triangle(p1, p2, p3) {
+    this->n1 = n1;
+    this->n2 = n2;
+    this->n3 = n3;
+}
+
+Vector SmoothTriangle::getN1(){
+    return n1;
+}
+
+Vector SmoothTriangle::getN2(){
+    return n2;
+}
+
+Vector SmoothTriangle::getN3(){
+    return n3;
+}
+
+// Moller-Trumbore ray-triangle intersection algorithm
+std::vector<Intersection> SmoothTriangle::childIntersections(Ray r){
+    Vector dir_cross_e2 = crossProduct(r.getDirection(), e2);
+    float det = dotProduct(e1, dir_cross_e2);
+
+    // Ray is parallel to triangle
+    if(std::abs(det) < EPSILON){
+        return std::vector<Intersection>();
+    }
+
+    // Ray misses p1-p3 edge
+    float f = 1.0/det;
+    Vector p1_to_origin = r.getOrigin() - p1;
+    float u = f*dotProduct(p1_to_origin, dir_cross_e2);
+    if(u < 0 || u > 1){
+        return std::vector<Intersection>();
+    }
+
+    // Ray misses p1-p2 edge and ray misses the p2-p3 edge
+    Vector origin_cross_e1 = crossProduct(p1_to_origin, e1);
+    float v = f*dotProduct(r.getDirection(), origin_cross_e1);
+    if(v < 0 || (u + v) > 1){
+        return std::vector<Intersection>();
+    }
+
+    // Ray hits the triangle
+    float t = f*dotProduct(e2, origin_cross_e1);
+    return std::vector<Intersection>({Intersection(t, this, u, v)});
+}
+
+Vector SmoothTriangle::childNormal(Point p, Intersection hit){
+    return n2*hit.getU() + n3*hit.getV() + n1*(1 - hit.getU() - hit.getV());
 }

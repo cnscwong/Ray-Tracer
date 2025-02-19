@@ -33,9 +33,9 @@ public:
 
     // Computes the normal vector of a point on the surface of the shape
     // findIntersections does some preprocessing that would be done for any shape
-    Vector computeNormal(Point p);
+    Vector computeNormal(Point p, Intersection hit = Intersection(0, nullptr));
     // childIntersections executes custom code depending on what child class is being executed
-    virtual Vector childNormal(Point p);
+    virtual Vector childNormal(Point p, Intersection hit = Intersection(0, nullptr));
 
     // Equality check function
     virtual bool isEqual(Shape* s);
@@ -58,7 +58,7 @@ class Sphere: public Shape{
         // Computes all intersections of the ray r with the sphere
         std::vector<Intersection> childIntersections(Ray r);
         // Computes normal vector at point p on the sphere
-        Vector childNormal(Point p);
+        Vector childNormal(Point p, Intersection hit = Intersection(0, nullptr));
 };
 
 Sphere* glassSphere();
@@ -71,7 +71,7 @@ public:
     std::vector<Intersection> childIntersections(Ray r);
     // The normal vector at any point on the plane is the same
     // The default plane is an xz plane, so the normal vector will be Vector(0, 1, 0)
-    Vector childNormal(Point p);
+    Vector childNormal(Point p, Intersection hit = Intersection(0, nullptr));
 };
 
 // Class to represent cubes, default cube has a side length of 2 and origin at Point(0, 0, 0)
@@ -79,7 +79,7 @@ class Cube : public Shape{
 public:
     // Shape class override functions
     std::vector<Intersection> childIntersections(Ray r);
-    Vector childNormal(Point p);
+    Vector childNormal(Point p, Intersection hit = Intersection(0, nullptr));
 };
 
 // Cube helper function for computing intersections
@@ -107,7 +107,7 @@ public:
 
     // Shape class override functions
     std::vector<Intersection> childIntersections(Ray r);
-    Vector childNormal(Point p);
+    Vector childNormal(Point p, Intersection hit = Intersection(0, nullptr));
 
     // Intersection helper functions for the top and bottom caps
     static bool insideCapRadius(Ray r, float t);
@@ -136,7 +136,7 @@ public:
 
     // Shape class override functions
     std::vector<Intersection> childIntersections(Ray r);
-    Vector childNormal(Point p);
+    Vector childNormal(Point p, Intersection hit = Intersection(0, nullptr));
 
     // Intersection helper functions for the top and bottom caps
     static bool insideCapRadius(Ray r, float t, float radius);
@@ -145,7 +145,7 @@ public:
 
 // Class to represent triangles
 class Triangle : public Shape{
-private:
+protected:
     // Points storing the triangle corners
     Point p1, p2, p3;
     // Precomputed edge vectors from p1 to p2(e1), and p1 to p3(e2)
@@ -166,5 +166,23 @@ public:
 
     // Shape class override functions
     std::vector<Intersection> childIntersections(Ray r);
-    Vector childNormal(Point p);
+    Vector childNormal(Point p, Intersection hit = Intersection(0, nullptr));
+};
+
+// Triangles that have smoother edges when put next to other shapes(Will look more like one shape rather than two shapes beside eachother)
+class SmoothTriangle : public Triangle{
+private:
+    Vector n1, n2, n3;
+public:
+    // Triangle constructor
+    SmoothTriangle(Point p1, Point p2, Point p3, Vector n1, Vector n2, Vector n3);
+
+    // Getters
+    Vector getN1();
+    Vector getN2();
+    Vector getN3();
+
+    // Shape class override functions
+    std::vector<Intersection> childIntersections(Ray r);
+    Vector childNormal(Point p, Intersection hit = Intersection(0, nullptr));
 };
