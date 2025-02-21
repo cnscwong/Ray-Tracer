@@ -90,3 +90,38 @@ TEST(ObjParser_ObjToGroupTest, GeneratedGroupHasCorrectChildrenGroups){
     EXPECT_EQ(child1->name, "FirstGroup");
     EXPECT_EQ(child2->name, "SecondGroup");
 }
+
+TEST(ObjParserTest, VertexNormalRecordsCorrectlyParsed){
+    ObjParser parser("vn 0 0 1\nvn 0.707 0 -0.707\nvn 1 2 3", false);
+
+    EXPECT_EQ(parser.groupsInd, 0);
+    EXPECT_EQ(parser.normals.size(), 3);
+    EXPECT_TRUE(parser.normals.at(0).isEqual(Vector(0, 0, 1)));
+    EXPECT_TRUE(parser.normals.at(1).isEqual(Vector(0.707, 0, -0.707)));
+    EXPECT_TRUE(parser.normals.at(2).isEqual(Vector(1, 2, 3)));
+    EXPECT_EQ(parser.groups.at(0)->getShapes().size(), 0);
+}
+
+TEST(ObjParserTest, FaceRecordsCorrectlyParsedWithVertexNormals){
+    ObjParser parser("v 0 1 0\nv -1 0 0\nv 1 0 0\n\nvn -1 0 0\nvn 1 0 0\nvn 0 1 0\n\nf 1//3 2//1 3//2\nf 1/0/3 2/102/1 3/14/2", false);
+    
+    SmoothTriangle* t1 = dynamic_cast<SmoothTriangle*>(parser.groups.at(0)->getShapes().at(0));
+    SmoothTriangle* t2 = dynamic_cast<SmoothTriangle*>(parser.groups.at(0)->getShapes().at(1));
+
+    EXPECT_EQ(parser.groupsInd, 0);
+    EXPECT_EQ(parser.vertices.size(), 3);
+    EXPECT_EQ(parser.normals.size(), 3);
+    EXPECT_EQ(parser.groups.at(0)->getShapes().size(), 2);
+    EXPECT_TRUE(t1->getP1().isEqual(parser.vertices.at(0)));
+    EXPECT_TRUE(t1->getP2().isEqual(parser.vertices.at(1)));
+    EXPECT_TRUE(t1->getP3().isEqual(parser.vertices.at(2)));
+    EXPECT_TRUE(t1->getN1().isEqual(parser.normals.at(2)));
+    EXPECT_TRUE(t1->getN2().isEqual(parser.normals.at(0)));
+    EXPECT_TRUE(t1->getN3().isEqual(parser.normals.at(1)));
+    EXPECT_TRUE(t2->getP1().isEqual(parser.vertices.at(0)));
+    EXPECT_TRUE(t2->getP2().isEqual(parser.vertices.at(1)));
+    EXPECT_TRUE(t2->getP3().isEqual(parser.vertices.at(2)));
+    EXPECT_TRUE(t2->getN1().isEqual(parser.normals.at(2)));
+    EXPECT_TRUE(t2->getN2().isEqual(parser.normals.at(0)));
+    EXPECT_TRUE(t2->getN3().isEqual(parser.normals.at(1)));
+}

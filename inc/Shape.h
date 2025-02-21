@@ -172,6 +172,7 @@ public:
 // Triangles that have smoother edges when put next to other shapes(Will look more like one shape rather than two shapes beside eachother)
 class SmoothTriangle : public Triangle{
 private:
+    // The normals of the triangle vertices, used in calculations of the normal vector close to a triangles edges to appear smoother
     Vector n1, n2, n3;
 public:
     // Triangle constructor

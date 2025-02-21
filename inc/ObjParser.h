@@ -15,6 +15,8 @@ public:
     int groupsInd = 0;
     // Stores xyz coordinates prefixed by v in obj files
     std::vector<Point> vertices;
+    // Stores xyz coordinates prefixed by vn in obj files, for smooth triangles
+    std::vector<Vector> normals;
 
     // Constructor
     ObjParser(std::string file_path_or_content, bool isFile);
