@@ -18,11 +18,11 @@ void Shape::setMaterial(Material m){
     material = m;
 }
 
-Group* Shape::getParent(){
+Shape* Shape::getParent(){
     return parent;
 }
 
-void Shape::setParent(Group* p){
+void Shape::setParent(Shape* p){
     parent = p;
 }
 
@@ -56,7 +56,26 @@ Vector Shape::childNormal(Point p, Intersection hit){
 
 // Shape equality function
 bool Shape::isEqual(Shape* s){
-    return transform.isEqual(s->getTransform()) && material.isEqual(s->getMaterial());
+    // If pointers are the same
+    if(this == s){
+        return true;
+    }
+
+    // If transforms and materials match
+    if(transform.isEqual(s->getTransform()) && material.isEqual(s->getMaterial())){
+        return childEqual(s);
+    }
+
+    return false;
+}
+
+// Defaults to false to help catch any tests that check equality but the base class childEqual function is called
+bool Shape::childEqual(Shape* s){
+    return false;
+}
+
+bool Shape::includes(Shape* s){
+    return this->isEqual(s);
 }
 
 // Converts a point in the world to a point relative to the shape
@@ -80,13 +99,13 @@ Vector Shape::normalToWorld(Vector normal){
 }
 
 // Checks equality of spheres
-bool Sphere::isEqual(Shape* s){
+bool Sphere::childEqual(Shape* s){
     Sphere* s1 = dynamic_cast<Sphere*>(s);
     if(s1 == nullptr){
         return false;
-    }else{
-        return Shape::isEqual(s);
     }
+
+    return true;
 }
 
 // Eg. A ray that originates from (-3, 0, 0) and travels at speed (1, 0, 0) will
@@ -137,6 +156,16 @@ Sphere* glassSphere(){
     return s;
 }
 
+// Checks equality of planes
+bool Plane::childEqual(Shape* s){
+    Plane* p = dynamic_cast<Plane*>(s);
+    if(p == nullptr){
+        return false;
+    }
+
+    return true;
+}
+
 // Computes the point of intersection of a ray on the plane 
 std::vector<Intersection> Plane::childIntersections(Ray r){
     // Since the default plane is an xz plane before transformation, any vector with a y value of ~0(floating-point error) will be parallel to the plane
@@ -155,6 +184,16 @@ std::vector<Intersection> Plane::childIntersections(Ray r){
 // The default plane is an xz plane, so the normal vector will be Vector(0, 1, 0)
 Vector Plane::childNormal(Point p, Intersection hit){
     return Vector(0, 1, 0);
+}
+
+// Checks equality of cubes
+bool Cube::childEqual(Shape* s){
+    Cube* c = dynamic_cast<Cube*>(s);
+    if(c == nullptr){
+        return false;
+    }
+
+    return true;
 }
 
 // Computes all intersections of a ray and the cube
@@ -255,6 +294,16 @@ void Cylinder::setMinH(float h){
 
 void Cylinder::setClosed(bool c){
     closed = c;
+}
+
+// Checks equality of cylinders
+bool Cylinder::childEqual(Shape* s){
+    Cylinder* c = dynamic_cast<Cylinder*>(s);
+    if(c == nullptr){
+        return false;
+    }
+    
+    return floatIsEqual(maxH, c->getMaxH()) && floatIsEqual(minH, c->getMinH()) && closed == c->getClosed();
 }
 
 // Computes all intersections of a ray and the cylinder
@@ -388,6 +437,16 @@ void Cone::setMinH(float h){
 
 void Cone::setClosed(bool c){
     closed = c;
+}
+
+// Checks equality of cones
+bool Cone::childEqual(Shape* s){
+    Cone* c = dynamic_cast<Cone*>(s);
+    if(c == nullptr){
+        return false;
+    }
+
+    return floatIsEqual(maxH, c->getMaxH()) && floatIsEqual(minH, c->getMinH()) && closed == c->getClosed();
 }
 
 // Computes all intersections of a ray and the cone
@@ -525,6 +584,24 @@ Vector Triangle::getNormal(){
     return normal;
 }
 
+// Checks equality of triangles
+bool Triangle::childEqual(Shape* s){
+    Triangle* t = dynamic_cast<Triangle*>(s);
+    if(t == nullptr){
+        return false;
+    }
+
+    if(!p1.isEqual(t->getP1()) || !p2.isEqual(t->getP2()) || !p3.isEqual(t->getP3())){
+        return false;
+    }
+
+    if(!e1.isEqual(t->getE1()) || !e2.isEqual(t->getE2()) || !normal.isEqual(t->getNormal())){
+        return false;
+    }
+    
+    return true;
+}
+
 // Moller-Trumbore ray-triangle intersection algorithm
 std::vector<Intersection> Triangle::childIntersections(Ray r){
     Vector dir_cross_e2 = crossProduct(r.getDirection(), e2);
@@ -577,6 +654,20 @@ Vector SmoothTriangle::getN2(){
 
 Vector SmoothTriangle::getN3(){
     return n3;
+}
+
+// Checks equality of smooth triangles
+bool SmoothTriangle::childEqual(Shape* s){
+    SmoothTriangle* t = dynamic_cast<SmoothTriangle*>(s);
+    if(t == nullptr){
+        return false;
+    }
+
+    if(!n1.isEqual(t->getN1()) || !n2.isEqual(t->getN2()) || !n3.isEqual(t->getN3())){
+        return false;
+    }
+
+    return Triangle::isEqual(s);
 }
 
 // Moller-Trumbore ray-triangle intersection algorithm

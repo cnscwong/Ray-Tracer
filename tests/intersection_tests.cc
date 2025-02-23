@@ -5,7 +5,7 @@
 #include "Intersection.h"
 
 TEST(IntersectionTest, BasicTest){
-    Shape* s = new Sphere;
+    Sphere* s = new Sphere;
     Intersection i(3.5, s, 0.2, 0.4);
 
     EXPECT_EQ(i.getTime(), 3.5);
@@ -16,7 +16,7 @@ TEST(IntersectionTest, BasicTest){
 
 // Testing the intersections function
 TEST(IntersectionTest, PackingTest){
-    Shape* s = new Sphere;
+    Sphere* s = new Sphere;
     Intersection i(3.5, s);
     EXPECT_EQ(i.getTime(), 3.5);
     EXPECT_TRUE(i.getShape()->isEqual(s));

@@ -31,3 +31,13 @@ std::vector<Intersection> Group::childIntersections(Ray r){
     std::sort(intersects.begin(), intersects.end(), compareIntersections);
     return intersects;
 }
+
+bool Group::includes(Shape* s){
+    for(int i = 0; i < shapes.size(); i++){
+        if(shapes.at(i)->includes(s)){
+            return true;
+        }
+    }
+
+    return false;
+}

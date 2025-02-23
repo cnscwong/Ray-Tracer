@@ -5,9 +5,6 @@
 #include "Intersection.h"
 #include "Ray.h"
 #include <stdexcept>
-class Group;
-// Forward declaration of group because group is a child of shape and contains shapes
-// A shape can have a group it belongs to
 
 // Parent class for all objects that can be rendered
 class Shape{
@@ -15,15 +12,15 @@ protected:
     // Stores material of shape and the matrix transformation that is applied to the shape
     Matrix transform = Matrix(4);
     Material material = Material();
-    Group* parent = nullptr;
+    Shape* parent = nullptr;
 public:
     // Getter and setter for transform and material
     Matrix getTransform();
     void setTransform(Matrix m);
     Material getMaterial();
     void setMaterial(Material m);
-    Group* getParent();
-    void setParent(Group* p);
+    Shape* getParent();
+    void setParent(Shape* p);
 
     // Returns a vector of intersection objects where the ray r intersects the surface of the shape
     // findIntersections does some preprocessing that would be done for any shape
@@ -34,11 +31,20 @@ public:
     // Computes the normal vector of a point on the surface of the shape
     // findIntersections does some preprocessing that would be done for any shape
     Vector computeNormal(Point p, Intersection hit = Intersection(0, nullptr));
-    // childIntersections executes custom code depending on what child class is being executed
+    // childNormal executes custom code depending on what child class is being executed
     virtual Vector childNormal(Point p, Intersection hit = Intersection(0, nullptr));
 
-    // Equality check function
-    virtual bool isEqual(Shape* s);
+    // Equality check functions
+    // Does not check parent values, we just want to know if the current shape matches shape s
+    // Does not matter if either of them are children of something
+    bool isEqual(Shape* s);
+    // childEqual executes custom equality logic depending on what child shape is being checked
+    virtual bool childEqual(Shape* s);
+
+    // Checks if the object includes the shape s, returns isEqual(s) if it is not a CSG or Group. CSG or Group will call recursively
+    // on children until it finds a child that matches s(hence the default behaviour of returning isEqual for normal shapes)
+    // Used to compute hitLeft boolean value in CSG::filterIntersections
+    virtual bool includes(Shape* s);
     
     // Recursive functions for groups
     // Converts a point in the world to a point relative to the shape
@@ -51,10 +57,8 @@ public:
 // Class to represent spheres in the canvas, default sphere has a radius of 1 and the center is at the origin
 class Sphere: public Shape{
     public:
-        // Checks if sphere is equal to s
-        bool isEqual(Shape* s);
-
         // Shape class override functions
+        bool childEqual(Shape* s);
         // Computes all intersections of the ray r with the sphere
         std::vector<Intersection> childIntersections(Ray r);
         // Computes normal vector at point p on the sphere
@@ -67,6 +71,7 @@ Sphere* glassSphere();
 class Plane : public Shape{
 public:
     // Shape class override functions
+    bool childEqual(Shape* s);
     // Computes the point of intersection of a ray on the plane 
     std::vector<Intersection> childIntersections(Ray r);
     // The normal vector at any point on the plane is the same
@@ -78,6 +83,7 @@ public:
 class Cube : public Shape{
 public:
     // Shape class override functions
+    bool childEqual(Shape* s);
     std::vector<Intersection> childIntersections(Ray r);
     Vector childNormal(Point p, Intersection hit = Intersection(0, nullptr));
 };
@@ -106,6 +112,7 @@ public:
     void setClosed(bool c);
 
     // Shape class override functions
+    bool childEqual(Shape* s);
     std::vector<Intersection> childIntersections(Ray r);
     Vector childNormal(Point p, Intersection hit = Intersection(0, nullptr));
 
@@ -135,6 +142,7 @@ public:
     void setClosed(bool c);
 
     // Shape class override functions
+    bool childEqual(Shape* s);
     std::vector<Intersection> childIntersections(Ray r);
     Vector childNormal(Point p, Intersection hit = Intersection(0, nullptr));
 
@@ -165,6 +173,7 @@ public:
     Vector getNormal();
 
     // Shape class override functions
+    bool childEqual(Shape* s);
     std::vector<Intersection> childIntersections(Ray r);
     Vector childNormal(Point p, Intersection hit = Intersection(0, nullptr));
 };
@@ -184,6 +193,7 @@ public:
     Vector getN3();
 
     // Shape class override functions
+    bool childEqual(Shape* s);
     std::vector<Intersection> childIntersections(Ray r);
     Vector childNormal(Point p, Intersection hit = Intersection(0, nullptr));
 };

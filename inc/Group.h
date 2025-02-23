@@ -23,4 +23,5 @@ public:
 
     // Shape override function
     std::vector<Intersection> childIntersections(Ray r);
+    bool includes(Shape* s);
 };
