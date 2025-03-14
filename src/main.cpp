@@ -12,6 +12,7 @@
 #include <cmath>
 
 int main(){
+    // CREATE YOUR SHAPES/SET SHAPE MATERIAL HERE
     CheckerPattern* p1 = new CheckerPattern({WHITE, Colour(0.1, 0.3, 0.9)});
     LinearGradient* p2 = new LinearGradient({Colour(0.34, 0.89, 0.89), Colour(0.31, 1, 0.44)});
     p2->setTransform(translationMatrix(1.5, -1, -0.5)*scalingMatrix(2.5, 1, 1));
@@ -47,20 +48,30 @@ int main(){
     m.colour = Colour(1, 0.8, 0.1);
     m.pattern = p4;
     left->setMaterial(m);
+    // CREATE YOUR SHAPES/SET SHAPE MATERIAL HERE
 
     World w;
+
+    // CONFIGURE LIGHT SOURCE HERE
     w.setLight(LightSource(Point(-10, 10, -10), Colour(1, 1, 1)));
-    // w.appendObject(floor);
+    // CONFIGURE LIGHT SOURCE HERE
+
+    // ADD SHAPES TO THE WORLD HERE
+    w.appendObject(floor);
     w.appendObject(middle);
     w.appendObject(right);
     w.appendObject(left);
+    // ADD SHAPES TO THE WORLD HERE
 
+    // SET GENERATED IMAGE PROPERTIES AND CAMERA POSITION/DIRECTION
     Camera c(100, 50, PI/3);
     c.setTransform(viewTransformationMatrix(Point(0, -6, -10), Point(0, 1, 0), Vector(0, 1, 0)));
-    Canvas canvas = c.render(w);
+    // SET GENERATED IMAGE PROPERTIES(height, width, fov) AND CAMERA POSITION/DIRECTION
 
+    Canvas canvas = c.render(w);
     canvas.writeToFile("out.ppm");
 
+    // DELETE SHAPES HERE
     delete floor;
     delete middle;
     delete right;
@@ -69,6 +80,7 @@ int main(){
     middle = nullptr;
     right = nullptr;
     left = nullptr;
+    // DELETE SHAPES HERE
 
     return 0;
 }

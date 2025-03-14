@@ -1,6 +1,6 @@
 TEST ?= all
 
-all:
+run:
 	g++ ./src/*.cpp -I ./inc/ -o main
 	./main.exe
 
