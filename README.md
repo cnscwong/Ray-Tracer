@@ -34,6 +34,8 @@ or if you don't have make
 g++ ./src/*.cpp -I ./inc/ -o main
 ./main.exe
 ```
+
+The generated output will be stored in the file out.ppm. Currently, other image file extensions are not supported. Please view the image using an online PPM viewer or an application like GIMP
 # Testing
 ### Run all tests
 ```sh
