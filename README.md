@@ -18,9 +18,9 @@ CPU version with testing('main' branch):
     - ```sh
       choco install make
       ```
-For running with an Nvidia GPU using the 'gpu' branch:
+<!-- For running with an Nvidia GPU using the 'gpu' branch:
 - [Visual Studio install](https://visualstudio.microsoft.com/vs/)
-- [CUDA toolkit install](https://developer.nvidia.com/cuda-downloads)
+- [CUDA toolkit install](https://developer.nvidia.com/cuda-downloads) -->
 
 # Usage
 Refer to the main.cpp file comments to see what code to change
